@@ -12,8 +12,8 @@ function LevelInfoBase.rewardScores(self)
     return self._rewardScores
 end
 
-function LevelInfoBase.isComplete(self)
-    return self._isComplete
+function LevelInfoBase.progress(self)
+    return self._progress
 end
 
 --
@@ -28,8 +28,16 @@ function LevelInfoBase.deserialize(self, data)
     SerializableObject.deserialize(self, data)
     
     assert(data.reward_scores   ~= nil)
-    assert(data.is_complete     ~= nil)
+    assert(data.progress        ~= nil)
     
     self._rewardScores = data.reward_scores
-    self._isComplete = data.is_complete
+    
+    self:initLevelProgress(data.progress)
+end
+
+function LevelInfoBase.initLevelProgress(self, data)
+    
+    self._progress = LevelProgressBase:new()
+    self._progress:deserialize(data)
+    
 end

@@ -1,4 +1,5 @@
 require('sdk.models.levels.LevelInfoBase')
+require('sdk.models.levels.LevelProgressBase')
 
 ManagerLevelsBase = classWithSuper(SerializableObject, 'ManagerLevelsBase')
 
@@ -20,7 +21,7 @@ function ManagerLevelsBase.firstIncompleteLevel(self)
     for i = 1, #self._levels, 1 do
         local level = self._levels[i]
         
-        if(not level:isComplete())then
+        if(not level:progress():isComplete())then
             result = level
             break
         end
@@ -52,6 +53,7 @@ function ManagerLevelsBase.deserialize(self, data)
     assert(data.levels ~= nil)
     
     for i, levelData in ipairs(data.levels)do
+        
         local level =  self._levelInfoClass:new()
         level:deserialize(levelData) 
         
