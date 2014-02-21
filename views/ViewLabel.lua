@@ -114,8 +114,9 @@ end
 function ViewLabel.cleanup(self)
     self:cleanupTimerUpdate()
     
-    self._sourceView:removeSelf()
-    self._sourceView = nil
+    local textProvider  = require("vendors.lib_text_candy")
+    
+    textProvider.DeleteText(self._sourceView)
     
     ViewBase.cleanup(self)
 end

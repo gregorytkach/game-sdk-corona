@@ -31,16 +31,27 @@ function ManagerResourcesBase.getPopupBackground(self, type)
 end
 
 function ManagerResourcesBase.getAsImage(self, resourceType)
-     if(resourceType == nil)then
-        print('remove it')
-    end
+    return self:_getImage(resourceType, nil)
+end
+
+function ManagerResourcesBase.getAsImageWithParam(self, resourceType, param)
+    assert(param        ~= nil)
+    
+    return self:_getImage( resourceType, param)
+end
+
+function ManagerResourcesBase._getImage(self, resourceType, param)
     assert(resourceType ~= nil)
     
     local result = self._resources[resourceType]
     
     assert(result ~= nil, string.format('Not found resource type: %s', resourceType))
     
-    result = string.format(result, application.assets_dir, application.scaleSuffix)
+    if(param == nil)then
+        result = string.format(result, application.assets_dir, application.scaleSuffix)
+    else
+        result = string.format(result, application.assets_dir, param, application.scaleSuffix)
+    end
     
     return result
 end
@@ -61,20 +72,17 @@ function ManagerResourcesBase.getAsButton(self, resourceType)
     return result
 end
 
-function ManagerResourcesBase.getAsImageWithParam(self, resourceType, param)
-    assert(resourceType ~= nil)
-    assert(param        ~= nil)
-    
-    local result = self._resources[resourceType]
-    
-    assert(result ~= nil, string.format('Not found resource type: %s', resourceType))
-    
-    result = string.format(result, application.assets_dir, param, application.scaleSuffix)
-    
-    return result
+function ManagerResourcesBase.getAsAnimation(self, resourceType, scale)
+    return self:_getAnimation(resourceType, nil, scale)
 end
 
-function ManagerResourcesBase.getAsAnimation(self, resourceType, scale)
+function ManagerResourcesBase.getAsAnimationWithParam(self, resourceType, param, scale)
+    assert(param        ~= nil)
+    
+    return self:_getAnimation(resourceType, param, scale)
+end
+
+function ManagerResourcesBase._getAnimation(self, resourceType, param, scale)
     local result = nil
     
     assert(resourceType ~= nil)
@@ -85,7 +93,14 @@ function ManagerResourcesBase.getAsAnimation(self, resourceType, scale)
         scale = application.scaleMin
     end
     
-    local sheetImage = string.format(self._resources[resourceType], application.assets_dir, application.scaleSuffix)
+    local sheetImage = nil
+    
+    if (param == nil) then
+        sheetImage = string.format(self._resources[resourceType], application.assets_dir, application.scaleSuffix)
+    else
+        sheetImage = string.format(self._resources[resourceType], application.assets_dir, param, application.scaleSuffix)
+    end
+    
     
     assert(isFileExists(sheetImage))
     
@@ -105,7 +120,6 @@ function ManagerResourcesBase.getAsAnimation(self, resourceType, scale)
     
     result.xScale = scale
     result.yScale = scale
-    
     
     return result
 end
