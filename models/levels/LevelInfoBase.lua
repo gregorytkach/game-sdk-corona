@@ -12,6 +12,10 @@ function LevelInfoBase.rewardScores(self)
     return self._rewardScores
 end
 
+function LevelInfoBase.rewardCurrencySoft(self)
+    return self._rewardCurrencySoft
+end
+
 function LevelInfoBase.progress(self)
     return self._progress
 end
@@ -27,10 +31,12 @@ end
 function LevelInfoBase.deserialize(self, data)
     SerializableObject.deserialize(self, data)
     
-    assert(data.reward_scores   ~= nil)
-    assert(data.progress        ~= nil)
+    assert(data.reward_currency_soft    ~= nil)
+    assert(data.reward_scores           ~= nil)
+    assert(data.progress                ~= nil)
     
-    self._rewardScores = data.reward_scores
+    self._rewardCurrencySoft    = data.reward_currency_soft
+    self._rewardScores          = data.reward_scores
     
     self:initLevelProgress(data.progress)
 end

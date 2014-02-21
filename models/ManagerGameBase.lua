@@ -46,6 +46,8 @@ function ManagerGameBase.onGameEnd(self)
     assert(not self._gameEnded, "game already ended")
     
     self._gameEnded = true
+    
+    self._currentState:update(EControllerUpdateBase.ECUT_GAME_FINISHED)
 end
 
 --

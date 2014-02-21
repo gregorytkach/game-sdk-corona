@@ -11,7 +11,17 @@ function ControllerPopup.getType()
     return nil
 end
 
+--
+-- Events
+--
 
+function ControllerPopup.onButtonCloseClicked(self)
+    local currentState = GameInfoBase:instance():managerStates():currentState()
+    
+    assert(currentState:currentPopup() == self, "Can't hide not current popup")
+    
+    currentState:hidePopup()
+end
 
 --
 --Methods
@@ -27,11 +37,7 @@ function ControllerPopup.onViewClicked(self, target, event)
     
     if(target == self._view:buttonClose())then
         
-        local currentState = GameInfoBase:instance():managerStates():currentState()
-        
-        assert(currentState:currentPopup() == self, "Can't hide not current popup")
-        
-        currentState:hidePopup()
+        self:onButtonCloseClicked()
         
         result = true
     end
@@ -39,5 +45,7 @@ function ControllerPopup.onViewClicked(self, target, event)
     
     return result
 end
+
+
 
 
