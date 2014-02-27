@@ -35,7 +35,7 @@ function ManagerCacheBase.init(self)
     self._directoryPlayers          = application.dir_data..'players'
     self._fileNamePlayerCurrent     = 'player_current.json'
     
-    self._directoryLevelContainers  = application.dir_data..'levels/level_containers'
+    self._directoryLevelContainers  = application.dir_data..'levels'..application.slash..'level_containers'
     self._fileNameLevelContainer    = 'data.json'
     self._directoryLevels           = 'levels'
     
@@ -118,7 +118,7 @@ end
 function ManagerCacheBase.getOrCreateBonus(self)
     local result = nil
     
-    local fileName = string.format('%s/%s', self._directoryBonus, self._fileNameBonus)
+    local fileName = string.format('%s%s%s', self._directoryBonus,application.slash,self._fileNameBonus)
     
     result = JSONHelper.getDataFrom(fileName, system.DocumentsDirectory)
     
@@ -137,7 +137,7 @@ end
 function ManagerCacheBase.getOrCreateBonusEnergy(self)
     local result = nil
     
-    local fileName = string.format('%s/%s', self._directoryBonusEnergy, self._fileNameBonusEnergy)
+    local fileName = string.format('%s%s%s', self._directoryBonusEnergy,application.slash, self._fileNameBonusEnergy)
     
     result = JSONHelper.getDataFrom(fileName, system.DocumentsDirectory)
     
@@ -158,7 +158,7 @@ end
 function ManagerCacheBase.getOrCreatePurchases(self)
     local result = nil
     
-    local fileName = string.format('%s/%s', self._directoryPurchases, self._fileNamePurchases)
+    local fileName = string.format('%s%s%s', self._directoryPurchases, application.slash, self._fileNamePurchases)
     
     result = JSONHelper.getDataFrom(fileName, system.DocumentsDirectory)
     
@@ -177,7 +177,7 @@ end
 function ManagerCacheBase.getOrCreatePlayerCurrent(self)
     local result = nil
     
-    local fileName = string.format('%s/%s', self._directoryPlayers, self._fileNamePlayerCurrent)
+    local fileName = string.format('%s%s%s', self._directoryPlayers, application.slash, self._fileNamePlayerCurrent)
     
     result = JSONHelper.getDataFrom(fileName, system.DocumentsDirectory)
     
@@ -200,13 +200,13 @@ function ManagerCacheBase.getOrCreateLevelContainers(self)
     
     for i, childName in ipairs(subDirs)do
         
-        local isDirectory = getIsDirectory(string.format('%s/%s', self._directoryLevelContainers, childName), system.DocumentsDirectory)
+        local isDirectory = getIsDirectory(string.format('%s%s%s', self._directoryLevelContainers, application.slash, childName), system.DocumentsDirectory)
         
         if(childName == '.' or childName == '..')then
             --do nothing
         elseif(isDirectory)then
             --try load container
-            local dataLevelContainer =  self:tryLoadLevelContainerData(string.format('%s/%s', self._directoryLevelContainers, childName))
+            local dataLevelContainer =  self:tryLoadLevelContainerData(string.format('%s%s%s', self._directoryLevelContainers, application.slash, childName))
             
             if(dataLevelContainer ~= nil)then
                 table.insert(result, dataLevelContainer)
@@ -241,7 +241,7 @@ function ManagerCacheBase.tryLoadLevelContainerData(self, dirContainer)
     
     for i, childName in ipairs(subDirs)do
         
-        local childPath = string.format("%s/%s", dirContainer, childName)
+        local childPath = string.format("%s%s%s", dirContainer, application.slash, childName)
         
         if(childName == self._directoryLevels)then
             
@@ -256,7 +256,7 @@ function ManagerCacheBase.tryLoadLevelContainerData(self, dirContainer)
                 for levelFileIndex = 1, #levelsFiles, 1 do
                     local levelFile = levelsFiles[levelFileIndex]
                     
-                    local levelFilePath = string.format('%s/%s/%s', dirContainer, childName, levelFile)
+                    local levelFilePath = string.format('%s'..application.slash..'%s'..application.slash..'%s', dirContainer, childName, levelFile)
                     
                     local isDirectory = getIsDirectory(levelFilePath, system.DocumentsDirectory)
                     
@@ -300,12 +300,12 @@ function ManagerCacheBase.saveLevelContainers(self, dataLevelContainers)
         for levelIndex = 1, #dataLevelContainer.levels, 1 do 
             local dataLevel = dataLevelContainer.levels[i]
             
-            JSONHelper.saveDataTo(dataLevel, string.format("%s/%i/%s/%i.json", self._directoryLevelContainers, i, self._directoryLevels, levelIndex))
+            JSONHelper.saveDataTo(dataLevel, string.format("%s"..application.slash.."%i"..application.slash.."%s"..application.slash.."%i.json", self._directoryLevelContainers, i, self._directoryLevels, levelIndex))
         end
         
         dataLevelContainer.levels = nil
         
-        JSONHelper.saveDataTo(dataLevelContainer, string.format('%s/%i/%s', self._directoryLevelContainers, i, self._fileNameLevelContainer))
+        JSONHelper.saveDataTo(dataLevelContainer, string.format('%s'..application.slash..'%i'..application.slash..'%s', self._directoryLevelContainers, i, self._fileNameLevelContainer))
         
     end
     
