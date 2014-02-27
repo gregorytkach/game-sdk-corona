@@ -48,9 +48,9 @@ function ManagerResourcesBase._getImage(self, resourceType, param)
     assert(result ~= nil, string.format('Not found resource type: %s', resourceType))
     
     if(param == nil)then
-        result = string.format(result, application.assets_dir, application.scaleSuffix)
+        result = string.format(result, application.dir_assets, application.scaleSuffix)
     else
-        result = string.format(result, application.assets_dir, param, application.scaleSuffix)
+        result = string.format(result, application.dir_assets, param, application.scaleSuffix)
     end
     
     return result
@@ -67,7 +67,7 @@ function ManagerResourcesBase.getAsButton(self, resourceType)
     
     assert(result ~= nil, string.format('Not found resource type: %s', resourceType))
     
-    result = string.format(result, application.assets_dir, "%s", application.scaleSuffix)
+    result = string.format(result, application.dir_assets, "%s", application.scaleSuffix)
     
     return result
 end
@@ -96,9 +96,9 @@ function ManagerResourcesBase._getAnimation(self, resourceType, param, scale)
     local sheetImage = nil
     
     if (param == nil) then
-        sheetImage = string.format(self._resources[resourceType], application.assets_dir, application.scaleSuffix)
+        sheetImage = string.format(self._resources[resourceType], application.dir_assets, application.scaleSuffix)
     else
-        sheetImage = string.format(self._resources[resourceType], application.assets_dir, param, application.scaleSuffix)
+        sheetImage = string.format(self._resources[resourceType], application.dir_assets, param, application.scaleSuffix)
     end
     
     

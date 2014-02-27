@@ -1,6 +1,7 @@
 require('sdk.core.Object')
 require('sdk.core.SerializableObject')
 require('sdk.core.Utils')
+require('sdk.core.JSONHelper')
 
 require('sdk.controllers.EControllerUpdateBase')
 
@@ -16,7 +17,9 @@ require("sdk.models.sounds.ManagerSoundsBase")
 require("sdk.models.string.ManagerStringBase")
 require("sdk.models.ManagerGameBase")
 require("sdk.models.ManagerResourcesBase")
-
+require("sdk.models.remote.ManagerRemoteBase")
+require("sdk.models.remote.ManagerRemoteStub")
+require('sdk.models.cache.ManagerCacheBase')
 require('sdk.states.empty.StateEmpty')
 require('sdk.states.EStateTypeBase')
 
@@ -46,6 +49,7 @@ function GameInfoBase.initGameInfo(class)
         system.setGyroscopeInterval    (10)		-- INCREASE BATTERY LIFE
         system.setIdleTimer( false )                    -- DISABLE AUTOMATIC SCREEN DIMMING
         
+        GameInfoBase.initSystemInfo()
         GameInfoBase.initAppConstants()
         GameInfoBase.initMargins()
     end
@@ -98,6 +102,10 @@ function GameInfoBase.managerBonus(self)
     return self._managerBonus
 end
 
+function GameInfoBase.managerBonusEnergy(self)
+    return self._managerBonusEnergy
+end
+
 function GameInfoBase.managerPlayers(self)
     return self._managerPlayers
 end
@@ -106,9 +114,21 @@ function GameInfoBase.managerLevels(self)
     return self._managerLevels
 end
 
+function GameInfoBase.managerRemote(self)
+    return self._managerRemote
+end
+
+function GameInfoBase.managerCache(self)
+    return self._managerCache
+end
+
+
 function GameInfoBase:instance(self)
     return _instance
 end
+
+
+
 
 
 
@@ -139,10 +159,13 @@ function GameInfoBase.registerStates(self)
 end
 
 function GameInfoBase.loadFonts(self)
-    
 end
 
-function GameInfoBase.initAppConstants()
+function GameInfoBase.initSystemInfo(self)
+    application.device_id = system.getInfo("deviceID")
+end
+
+function GameInfoBase.initAppConstants(self)
     --
     --Screen size
     --

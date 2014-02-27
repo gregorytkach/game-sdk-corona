@@ -1,3 +1,5 @@
+local lfs = require 'lfs'
+
 function isSimulator()
     return "simulator" == system.getInfo("environment")
 end
@@ -45,22 +47,32 @@ function unrequire(m)
     return result
 end
 
-function isFileExists(name)
+--check is file exists
+--if base dir not present - try found in resource directory 
+function isFileExists(fileName, baseDir)
+    
+    assert(fileName ~= nil)
     
     local result = false
     
-    if (application.debug and isSimulator()) then
-        local f = io.open(name, "r")
+    if(baseDir == nil)then
+        baseDir = system.ResourceDirectory
+    end
+    
+    local filePath = system.pathForFile(fileName, baseDir)
+    
+    if(filePath ~= nil)then
+        local fileHandler = io.open(filePath, "r")
         
-        if (f ~= nil) then 
-            io.close(f)
+        if (fileHandler ~= nil) then 
+            io.close(fileHandler)
             
             result = true 
         else
-            print(string.format("[WARNING]:Not found file : %s", name))
+            print(string.format("[WARNING]:Not found file : %s", filePath))
         end 
     else
-        result = true
+        print(string.format("[WARNING]:Not found file : %s", fileName))
     end
     
     return result
@@ -85,3 +97,71 @@ function getFilePath(filePath)
     return filePath
 end
 
+function getParentFolder(filePath)
+    local parentFolder, fileName = string.match(filePath, "^(.*[\/\\])([^\/\\]+)")
+    
+    return parentFolder
+end
+
+function createParentDirectories(fileName, baseDir)
+    assert(fileName ~= nil)
+    assert(baseDir  ~= nil)
+    
+    local directoriesToCreate       = {}
+    local parentFolder              = getParentFolder(fileName)
+    
+    while parentFolder ~= nil do
+        table.insert(directoriesToCreate, parentFolder)
+        
+        parentFolder = getParentFolder(parentFolder)
+    end
+    
+    for i = #directoriesToCreate, 1, -1 do
+        local currentFolder = directoriesToCreate[i]
+        
+        local dirPath = system.pathForFile(currentFolder, baseDir)
+        
+        local isDirectoryCreate =  lfs.mkdir(dirPath)
+        if(isDirectoryCreate == true)then
+            print("Directory created "..dirPath)
+        end
+        
+    end
+end
+
+function getAllFilesInDirectory(dirName, baseDir)
+    assert(dirName ~= nil)
+    assert(baseDir ~= nil)
+    
+    local result = {}
+    
+    if isFileExists(dirName, baseDir)then
+        
+        local path = system.pathForFile(dirName, baseDir)
+        
+        for fileName in lfs.dir(path) do
+            table.insert(result, fileName)
+        end
+    end
+    
+    return result
+end
+
+function getIsDirectory(fileName, baseDir)
+    assert(fileName ~= nil)
+    assert(baseDir ~= nil)
+    
+    local result = false
+    
+    local path = system.pathForFile(fileName, baseDir)
+    
+    local fileHandler = io.open(path, 'r')
+    
+    local firstByte, errorMessage = fileHandler:read(1)
+    
+    if(errorMessage ~= nil) then
+        result = true
+    end
+    
+    return result
+end

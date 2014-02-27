@@ -12,7 +12,7 @@ end
 
 function SerializableObject.deserialize(self, data)
     if(data == nil)then
-        print('debug it')
+        print('set breakpoint here')
     end
     
     assert(data ~= nil, 'Data must be non nil')

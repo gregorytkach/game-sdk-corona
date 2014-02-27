@@ -111,6 +111,14 @@ function StateBase.onDeactivate(self)
     self._blockerScene.alpha = 0.6
 end
 
+function StateBase.cleanupTweenBlockerSceneHide(self)
+    
+    if(self._tweenBlockerSceneHide ~= nil)then
+        transition.cancel(self._tweenBlockerSceneHide)
+        self._tweenBlockerSceneHide = nil
+    end
+end
+
 function StateBase.hidePopup(self, callback)
     assert(self._currentPopup ~= nil, 'Nothing to hide')
     
@@ -122,7 +130,7 @@ function StateBase.hidePopup(self, callback)
         alpha       = 0,
         onComplete  = 
         function ()
-            self._tweenBlockerSceneHide = nil
+            self:cleanupTweenBlockerSceneHide()
         end
     }
     self._tweenBlockerSceneHide = transition.to(self._blockerScene, paramsTweenBlockerScene)
@@ -166,7 +174,6 @@ function StateBase.initLayerPopups(self)
     self._blockerScene:setFillColor(0,0,0)
     self._blockerScene.alpha = 0
     self._blockerScene:addEventListener(ERuntimeEvent.ERE_TOUCH, StateBase.blockersCallback)
-    
     self._sceneStoryboard.view:insert(self._blockerScene)
     
     self._layerPopups = display.newGroup()
@@ -176,7 +183,6 @@ function StateBase.initLayerPopups(self)
     self._blockerPopups:setFillColor(0,0,0)
     self._blockerPopups.alpha = 0
     self._blockerPopups:addEventListener(ERuntimeEvent.ERE_TOUCH, StateBase.blockersCallback) 
-    
     self._sceneStoryboard.view:insert(self._blockerPopups)
     
     self._popups = {}
@@ -209,6 +215,7 @@ function StateBase.placeViews(self)
     
     self._blockerPopups.x = self._blockerScene.x
     self._blockerPopups.y = self._blockerScene.y 
+    
 end
 
 --
@@ -221,15 +228,13 @@ end
 -- Dispose
 --
 
-function StateBase.cleanup(self)
+function StateBase.cleanup(self)    
     self._sceneStoryboard:removeEventListener( "createScene",  self)
     self._sceneStoryboard:removeEventListener( "enterScene",   self)
     self._sceneStoryboard:removeEventListener( "exitScene",    self)
     self._sceneStoryboard:removeEventListener( "destroyScene", self)
     
-    if(self._tweenBlockerSceneHide ~= nil)then
-        transition.cancel(self._tweenBlockerSceneHide)
-    end
+    self:cleanupTweenBlockerSceneHide()
     
     self._blockerPopups:removeEventListener(ERuntimeEvent.ERE_TOUCH, StateBase.blockersCallback)
     self._blockerPopups:removeSelf()

@@ -4,15 +4,7 @@ ManagerBonusEnergyBase = classWithSuper(ManagerBonusBase, 'ManagerBonusEnergyBas
 -- Properties
 -- 
 
-function ManagerBonusEnergyBase.bonusEnergy(self)
-    return self._bonusEnergy
-end
-
 function ManagerBonusEnergyBase.onBonusEnergyClaimed(self)
-end
-
-function ManagerBonusEnergyBase.timeLeftEnergy(self)
-    return self._timeLeftEnergy
 end
 
 function ManagerBonusEnergyBase.limit(self)
@@ -68,20 +60,11 @@ end
 function ManagerBonusEnergyBase.deserialize(self, data)
     ManagerBonusBase.deserialize(self, data)
     
-    assert(data.energy              ~= nil)
-    assert(data.energy.time_period  ~= nil)
-    assert(data.energy.time_left    ~= nil)
-    assert(data.energy.bonus        ~= nil)
-    assert(data.energy.limit        ~= nil)
+    assert(data.limit           ~= nil)
     
-    local bonusEnergy = BonusInfoBase:new()
-    bonusEnergy:deserialize(data.energy.bonus)
+    self._limit = data.limit
     
-    self._bonusEnergy       = bonusEnergy
-    
-    self._timePeriodEnergy  = data.energy.time_period
-    self._timeLeftEnergy    = data.energy.time_left
-    self._limit             = data.energy.limit
-    self:timerEnergyStart()
+    --todo: review
+--    self:timerEnergyStart()
 end
 

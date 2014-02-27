@@ -115,12 +115,6 @@ end
 
 function ManagerStatesBase.cleanup(self)
     
-    if(self._currentState ~= nil)then
-        self._currentState:cleanup()
-        --        local currentStateName = self:_getStatePath(self._currentState:getType())
-        -- removeScene(currentStateName)
-    end
-    
     self._storyboard.removeAll() 
     self._storyboard.purgeAll()
     

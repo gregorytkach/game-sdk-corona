@@ -57,7 +57,6 @@ end
 
 --Default constructor
 function ViewBase.init(self, params)
-    
     if(params.controller == nil)then
         print('review')
     end
