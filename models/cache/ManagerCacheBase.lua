@@ -184,7 +184,7 @@ function ManagerCacheBase.getOrCreatePlayerCurrent(self)
     if(result == nil)then
         local data = self:getDataPlayerCurrent()
         
-        JSONHelper.saveDataTo(data, fileName)
+        self:savePlayerCurrent(data)
         
         --todo: remove
         result = self:getOrCreatePlayerCurrent()
@@ -289,6 +289,14 @@ function ManagerCacheBase.tryLoadLevelContainerData(self, dirContainer)
     end
     
     return result
+end
+
+function ManagerCacheBase.savePlayerCurrent(self, data)
+    assert(data ~= nil)
+    
+    local fileName = string.format('%s%s%s', self._directoryPlayers, application.slash, self._fileNamePlayerCurrent)
+    
+    JSONHelper.saveDataTo(data, fileName)
 end
 
 function ManagerCacheBase.saveLevelContainers(self, dataLevelContainers)

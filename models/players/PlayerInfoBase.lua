@@ -19,6 +19,8 @@ function PlayerInfoBase.setCurrencySoft(self, value)
     
     self._currencySoft = value
     
+    self:trySaveProgress()
+    
     local currentState = GameInfo:instance():managerStates():currentState()
     
     if(currentState ~= nil)then
@@ -37,6 +39,8 @@ function PlayerInfoBase.setEnergy(self, value)
     
     self._energy = value
     
+    self:trySaveProgress()
+    
     local currentState = GameInfo:instance():managerStates():currentState()
     
     if(currentState ~= nil)then
@@ -53,6 +57,24 @@ end
 function PlayerInfoBase.init(self)
     SerializableObject.init(self)
     
+    self._managerCache = GameInfoBase:instance():managerCache()
+    
+end
+
+function PlayerInfoBase.trySaveProgress(self)
+    if( self._managerCache ~= nil)then
+        self._managerCache:savePlayerCurrent(self:serialize())
+    end
+end
+
+function PlayerInfoBase.serialize(self)
+    local result = 
+    {
+        currency_soft   = self._currencySoft,
+        energy          = self._energy 
+    }
+    
+    return result
 end
 
 function PlayerInfoBase.deserialize(self, data)
