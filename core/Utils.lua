@@ -48,6 +48,7 @@ function unrequire(m)
 end
 
 --check is file exists
+--WARNING: do not use for check directory. For windows it not works properly
 --if base dir not present - try found in resource directory 
 function isFileExists(fileName, baseDir)
     
@@ -62,14 +63,14 @@ function isFileExists(fileName, baseDir)
     local filePath = system.pathForFile(fileName, baseDir)
     
     if(filePath ~= nil)then
-        local fileHandler = io.open(filePath, "r")
+        local fileHandler, errorMessage = io.open(filePath, "r")
         
         if (fileHandler ~= nil) then 
             io.close(fileHandler)
             
             result = true 
         else
-            print(string.format("[WARNING]:Not found file : %s", filePath))
+            print(string.format("[WARNING]:Not found file : %s \n %s", filePath, errorMessage))
         end 
     else
         print(string.format("[WARNING]:Not found file : %s", fileName))
@@ -135,7 +136,15 @@ function getAllFilesInDirectory(dirName, baseDir)
     
     local result = {}
     
-    if isFileExists(dirName, baseDir)then
+    local needCheckFile = application.platform_type == EPlatformType.EPT_UNIX
+    
+    local fileExists = true
+    
+    if(needCheckFile)then
+        fileExists = isFileExists(dirName, baseDir)
+    end
+    
+    if(fileExists)then
         
         local path = system.pathForFile(dirName, baseDir)
         
@@ -147,6 +156,9 @@ function getAllFilesInDirectory(dirName, baseDir)
     return result
 end
 
+
+--returns true if path is directory
+--if path not exists -> for unix returns false, for windows returns true
 function getIsDirectory(fileName, baseDir)
     assert(fileName ~= nil)
     assert(baseDir ~= nil)
@@ -155,12 +167,22 @@ function getIsDirectory(fileName, baseDir)
     
     local path = system.pathForFile(fileName, baseDir)
     
-    local fileHandler = io.open(path, 'r')
+    local fileHandler, _ = io.open(path, 'r')
     
-    local firstByte, errorMessage = fileHandler:read(1)
-    
-    if(errorMessage ~= nil) then
-        result = true
+    if(fileHandler == nil)then
+        
+        if(application.platform_type == EPlatformType.EPT_WIN)then
+            result = true 
+        end
+        
+    else
+        
+        local _, errorMessage = fileHandler:read(1)
+        io.close(fileHandler)
+        
+        if(errorMessage ~= nil) then
+            result = true
+        end
     end
     
     return result

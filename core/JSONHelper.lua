@@ -41,7 +41,7 @@ function JSONHelper.getDataFrom(fileName, baseDir)
         local fileHandler, errorMessage = io.open(path, "r")
         
         if fileHandler == nil then
-            print(string.format("[WARNING]: cant open file %s for read. Error: %s", path, errorMessage))
+            print(string.format("[WARNING]: cant open file %s for read.\nError: %s", path, errorMessage))
         else
             -- read all contents of file into a string
             local contents = fileHandler:read("*a")
@@ -56,7 +56,6 @@ function JSONHelper.getDataFrom(fileName, baseDir)
                 end
             end
         end
-        
     end
     
     
