@@ -55,6 +55,7 @@ function GameInfoBase.initGameInfo(class)
     end
     
     _instance = class:new()
+    _instance:onInitComplete()
 end
 
 
@@ -142,6 +143,24 @@ function GameInfoBase.system(self, event )
     
 end
 
+function GameInfoBase.onGameStart(self, value)
+    assert(value ~= nil)
+    assert(self._managerGame == nil, 'Game already started')
+    
+    self._managerGame = value
+end
+
+function GameInfoBase.onGameEnd(self)
+    assert(self._managerGame ~= nil)
+    
+    self._managerGame:cleanup()
+    self._managerGame = nil
+end
+
+function GameInfoBase.onGameStartComplete(self, response)
+    
+end
+
 --
 --Methods
 --
@@ -150,8 +169,24 @@ function GameInfoBase.init(self)
     assert(_instance == nil, "GameInfoBase is Singleton. Please use GameInfoBase.instance instead GameInfoBase.new")
     _instance = self
     
+    self:initManagers()
     self:loadFonts()
     self:registerStates()
+end
+
+function GameInfoBase.initManagers(self)
+    
+end
+
+function GameInfoBase.onInitComplete(self)
+    if(self._managerRemote ~= nil)then
+        self._managerRemote:update(ERemoteUpdateTypeBase.ERUT_GAME_START, nil, 
+        function(response) 
+            self:onGameStartComplete(response) 
+        end)
+    else
+        self:onGameStartComplete() 
+    end
 end
 
 function GameInfoBase.registerStates(self)
@@ -232,19 +267,7 @@ function GameInfoBase.initMargins()
     application.margin_right              = display.contentWidth - display.screenOriginX 
 end
 
-function GameInfoBase.onGameStart(self, value)
-    assert(value ~= nil)
-    assert(self._managerGame == nil, 'Game already started')
-    
-    self._managerGame = value
-end
 
-function GameInfoBase.onGameEnd(self)
-    assert(self._managerGame ~= nil)
-    
-    self._managerGame:cleanup()
-    self._managerGame = nil
-end
 
 function GameInfoBase.cleanup(self)
     if(self._managerGame ~= nil)then
