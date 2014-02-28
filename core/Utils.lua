@@ -187,3 +187,21 @@ function getIsDirectory(fileName, baseDir)
     
     return result
 end
+
+function getClone(data)
+    assert(data ~= nil)
+    
+    local result = {}
+    
+    for key, value in pairs(data)do
+        
+        if(type(value) == 'table')then
+            result[key] = getClone(value)
+        else
+            result[key] = value
+        end
+        
+    end
+    
+    return result
+end
