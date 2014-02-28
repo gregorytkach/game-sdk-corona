@@ -7,6 +7,10 @@ ManagerRemoteBase = classWithSuper(Object, 'ManagerRemoteBase')
 -- Properties
 --
 
+function ManagerRemoteBase.needManageMemory(self)
+    return false
+end
+
 function ManagerRemoteBase.isConnectionEstablished(self)
     return self._isConnectionEstablished
 end

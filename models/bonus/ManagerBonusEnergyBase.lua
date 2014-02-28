@@ -4,6 +4,10 @@ ManagerBonusEnergyBase = classWithSuper(ManagerBonusBase, 'ManagerBonusEnergyBas
 -- Properties
 -- 
 
+function ManagerBonusEnergyBase.needManageMemory(self)
+    return false
+end
+
 function ManagerBonusEnergyBase.onBonusEnergyClaimed(self)
 end
 

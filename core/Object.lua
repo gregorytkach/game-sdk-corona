@@ -30,7 +30,7 @@ function classWithSuper( baseClass, className )
         setmetatable( instance, { __index = classInstance } )
         instance:init(params)
         
-        if(application.debug and instance:needManageMemory())then
+        if(application.debug and instance:class().needManageMemory())then
             instance._isCleanuped       = false
             objectsForCleanup[instance] = instance
         end
@@ -58,7 +58,7 @@ function classWithSuper( baseClass, className )
         
         assert(not self._isCleanuped)
         
-        if(application.debug and self:needManageMemory())then
+        if(application.debug and self:class().needManageMemory())then
             self._isCleanuped = true
             
             objectsForCleanup[self] = nil

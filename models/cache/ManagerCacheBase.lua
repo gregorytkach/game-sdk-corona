@@ -7,6 +7,11 @@ ManagerCacheBase = classWithSuper(Object, 'ManagerCacheBase')
 -- Properties
 --
 
+
+function ManagerCacheBase.needManageMemory(self)
+    return false
+end
+
 function ManagerCacheBase.getDataPlayerCurrent(self)
     assert(false, 'Please override')
 end

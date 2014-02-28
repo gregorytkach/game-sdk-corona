@@ -4,6 +4,10 @@ LevelContainerBase = classWithSuper(SerializableObject, 'LevelContainerBase')
 -- Properties
 --
 
+function LevelContainerBase.needManageMemory(self)
+    return false
+end
+
 function LevelContainerBase:isOpen(self)
     --todo: implement
     return true
