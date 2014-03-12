@@ -311,7 +311,7 @@ function ManagerCacheBase.saveLevelContainers(self, dataLevelContainers)
         local dataLevelContainer = dataLevelContainers[i]
         
         for levelIndex = 1, #dataLevelContainer.levels, 1 do 
-            local dataLevel = dataLevelContainer.levels[i]
+            local dataLevel = dataLevelContainer.levels[levelIndex]
             
             JSONHelper.saveDataTo(dataLevel, string.format("%s/%i/%s/%i.json", self._directoryLevelContainers, i, self._directoryLevels, levelIndex))
         end

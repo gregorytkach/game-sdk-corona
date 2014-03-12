@@ -1,5 +1,6 @@
 require('sdk.models.remote.ERemoteUpdateTypeBase')
 require('sdk.models.remote.Response')
+require('sdk.models.remote.RemoteConnector')
 
 ManagerRemoteBase = classWithSuper(Object, 'ManagerRemoteBase')
 
@@ -20,10 +21,12 @@ end
 --
 
 function ManagerRemoteBase.init(self, params)
-    assert(params               ~= nil)
-    assert(params.server_url    ~= nil)
     
-    self._serverUrl = params.server_url
+    assert(params.remote_connector ~= nil)
+    
+    assert(application.server_url ~= nil)
+    
+    self._serverUrl = application.server_url
     
     self._socket = require("socket")
     
@@ -33,6 +36,8 @@ function ManagerRemoteBase.init(self, params)
     end, 9999)
     
     self:monitorConnection()
+    
+    self._remoteConnector = params.remote_connector
     
     if(self._isConnectionEstablished)then
         print("Internet access is available")
@@ -55,16 +60,25 @@ end
 
 function ManagerRemoteBase.update(self, type, data, callback)
     
+    local params = nil
+    
     if(type == ERemoteUpdateTypeBase.ERUT_GAME_START)then
-        self:getDataGameStart(data)
+        params = self:getParamsGameStart(data)
     else
         assert(false, 'Not implemented '..type)
     end
     
+    self._remoteConnector:update(type, params, callback)
+    
 end
 
-function ManagerRemoteBase.getDataGameStart(self, data)
+function ManagerRemoteBase.getParamsGameStart(self, data)
+    local result  = 
+    {
+        uuid = application.device_id
+    }
     
+    return result
 end
 
 function ManagerRemoteBase.tryCleanupTimerMonitor(self)
