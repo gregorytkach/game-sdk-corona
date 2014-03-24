@@ -9,6 +9,8 @@ require('sdk.views.ViewParticle')
 require('sdk.controllers.Controller')
 require('sdk.controllers.popups.ControllerPopup')
 
+require('sdk.views.base.ViewFPS')
+
 local storyboard = require( "storyboard" )
 
 StateBase = classWithSuper(Object, 'StateBase')
@@ -37,6 +39,24 @@ function StateBase.currentPopup(self)
     return self._currentPopup
 end
 
+--must call AFTER place views
+function StateBase.setMaxPopupWidth(self, value)
+    assert(value ~= nil)
+    
+    for _, popup in pairs(self._popups)do
+        
+        local popupupWidth = popup:view():realWidth()
+        
+        if(popupupWidth > value)then
+            local targetScale = value / popupupWidth
+            
+            popup:view():sourceView().xScale = popup:view():sourceView().xScale * targetScale
+            popup:view():sourceView().yScale = popup:view():sourceView().xScale 
+            
+        end
+    end
+end
+
 --
 --Events
 --
@@ -46,9 +66,9 @@ function StateBase.createScene(self, event)
     self:initLayerScene()
     self:initLayerUI()
     self:initLayerPopups()
+    self:initDebugViews()
     
     self:placeViews()
-    
 end
 
 function StateBase.enterScene(self, event)
@@ -188,6 +208,12 @@ function StateBase.initLayerPopups(self)
     self._popups = {}
 end
 
+function StateBase.initDebugViews(self)
+    if(application.show_fps)then
+        self._viewFPS = ViewFPS:new({ controller = {} })
+    end
+end
+
 
 function StateBase.registerPopup(self, popup)
     assert(popup ~= nil)
@@ -201,7 +227,11 @@ end
 
 function StateBase.placeViews(self)
     
-    for popupType, popup in pairs(self._popups)do
+    if(application.show_fps)then
+        self._viewFPS:placeViews()
+    end
+    
+    for _, popup in pairs(self._popups)do
         popup:view():placeViews()
         
         popup:view():sourceView().x = display.contentCenterX
@@ -235,6 +265,11 @@ function StateBase.cleanup(self)
     self._sceneStoryboard:removeEventListener( "destroyScene", self)
     
     self:cleanupTweenBlockerSceneHide()
+    
+    if(application.show_fps)then
+        self._viewFPS:cleanup()
+        self._viewFPS  = nil
+    end
     
     self._blockerPopups:removeEventListener(ERuntimeEvent.ERE_TOUCH, StateBase.blockersCallback)
     self._blockerPopups:removeSelf()

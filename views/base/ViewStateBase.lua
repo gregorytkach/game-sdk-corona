@@ -4,7 +4,7 @@ require('sdk.views.ViewSprite')
 require('sdk.views.ViewLabel')
 require('sdk.views.ViewParticle')
 
-require('sdk.views.base.ViewFPS')
+
 
 ViewStateBase = classWithSuper(ViewBase, 'ViewStateBase')
 
@@ -25,10 +25,6 @@ function ViewStateBase.init(self, params)
     ViewBase.init(self, params)
     
     self._sourceView = display.newGroup()
-    
-    if(application.show_fps)then
-        self._viewFPS = ViewFPS:new({ controller = self._controller })
-    end
 end
 
 function ViewStateBase.initBackground(self, resourceType)
@@ -51,9 +47,7 @@ function ViewStateBase.placeViews(self)
         self._background:sourceView().y = display.contentCenterY
     end
     
-    if(application.show_fps)then
-        self._viewFPS:placeViews()
-    end
+   
     
     ViewBase.placeViews(self)
 end
@@ -65,10 +59,7 @@ function ViewStateBase.cleanup(self)
         self._background = nil
     end
     
-    if(application.show_fps)then
-        self._viewFPS:cleanup()
-        self._viewFPS  = nil
-    end
+ 
     
     self._sourceView:removeSelf()
     self._sourceView = nil
