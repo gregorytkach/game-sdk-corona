@@ -1,5 +1,86 @@
 local lfs = require 'lfs'
 
+
+--
+--internal functions
+--
+
+local function getAllFilesInternal(path)
+    local result = {}
+    
+    for fileName in lfs.dir(path) do
+        table.insert(result, fileName)
+    end
+    
+    return result
+end
+
+local function getIsDirectoryInternal(filePath)
+    return  lfs.attributes(filePath, "mode") == "directory"
+end
+
+local function removeDirectoryInternal(path)
+    assert(getIsDirectoryInternal(path))
+    
+    local result = true
+    
+    local filesInDir = getAllFilesInternal(path)
+    
+    for _, fileName in ipairs(filesInDir) do
+        
+        if(fileName ~= '.' and fileName ~= '..')then
+            
+            local filePath = path..'/'..fileName
+            
+            if(getIsDirectoryInternal(filePath))then
+                
+                result = removeDirectoryInternal(filePath)
+                
+                if(result)then
+                    print('Dir remove success: '..filePath)
+                else
+                    break
+                end
+            else
+                
+                local resultOK, errorMsg = os.remove(filePath)
+                
+                result = resultOK ~= nil
+                
+                if( result)then
+                    print('File remove success: '..filePath)
+                else
+                    print('File remove error: '..filePath)
+                    print(string.format('Error: %s', errorMsg))
+                    
+                    break
+                end
+                
+            end
+        end
+    end
+    
+    if(result)then
+        local resultOK, errorMsg = os.remove(path)
+        
+        result = resultOK ~= nil
+        
+        if(result)then
+            print('Dir remove success: '..path)
+        else
+            print('Dir remove error: '..path)
+            print(string.format('Error: %s', errorMsg))
+        end
+        
+    end
+    
+    return result
+end
+
+--
+--public functions
+--
+
 function isSimulator()
     return "simulator" == system.getInfo("environment")
 end
@@ -148,9 +229,7 @@ function getAllFilesInDirectory(dirName, baseDir)
         
         local path = system.pathForFile(dirName, baseDir)
         
-        for fileName in lfs.dir(path) do
-            table.insert(result, fileName)
-        end
+        result = getAllFilesInternal(path)
     end
     
     return result
@@ -160,6 +239,33 @@ end
 --returns true if path is directory
 --if path not exists -> for unix returns false, for windows returns true
 function getIsDirectory(fileName, baseDir)
+    --    assert(fileName ~= nil)
+    --    assert(baseDir ~= nil)
+    --    
+    --    local result = false
+    --    
+    --    local path = system.pathForFile(fileName, baseDir)
+    --    
+    --    local fileHandler, _ = io.open(path, 'r')
+    --    
+    --    if(fileHandler == nil)then
+    --        
+    --        if(application.platform_type == EPlatformType.EPT_WIN)then
+    --            result = true 
+    --        end
+    --        
+    --    else
+    --        
+    --        local _, errorMessage = fileHandler:read(1)
+    --        io.close(fileHandler)
+    --        
+    --        if(errorMessage ~= nil) then
+    --            result = true
+    --        end
+    --    end
+    --    
+    --    return result
+    
     assert(fileName ~= nil)
     assert(baseDir ~= nil)
     
@@ -167,26 +273,24 @@ function getIsDirectory(fileName, baseDir)
     
     local path = system.pathForFile(fileName, baseDir)
     
-    local fileHandler, _ = io.open(path, 'r')
-    
-    if(fileHandler == nil)then
-        
-        if(application.platform_type == EPlatformType.EPT_WIN)then
-            result = true 
-        end
-        
-    else
-        
-        local _, errorMessage = fileHandler:read(1)
-        io.close(fileHandler)
-        
-        if(errorMessage ~= nil) then
-            result = true
-        end
-    end
+    result = getIsDirectoryInternal(path)
     
     return result
 end
+
+
+
+-- remove directory recursively
+-- return true if remove success
+function removeDirectory(fileName, baseDir)
+    assert(getIsDirectory(fileName, baseDir))
+    
+    local result =  removeDirectoryInternal(system.pathForFile(fileName, baseDir))
+    
+    return result
+end
+
+
 
 function getClone(data)
     assert(data ~= nil)

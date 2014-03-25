@@ -33,36 +33,141 @@ function ManagerCacheBase.getDataBonusEnergy(self)
 end
 
 --
+-- Paths
+-- 
+
+function ManagerCacheBase.directoryPlayers(self)
+    return application.dir_data..'players'
+end
+
+function ManagerCacheBase.fileNamePlayerCurrent(self)
+    return 'player_current.json'
+end
+
+function ManagerCacheBase.directoryLevelContainers(self)
+    return application.dir_data..'level_containers'
+end
+
+function ManagerCacheBase.fileNameLevelContainer(self)
+    return  'data.json'
+end
+
+
+function ManagerCacheBase.directoryLevels(self)
+    return 'levels'
+end
+
+function ManagerCacheBase.directoryPurchases(self)
+    return application.dir_data..'purchases'
+end
+
+function ManagerCacheBase.fileNamePurchases(self)
+    return 'purchases.json'
+end
+
+function ManagerCacheBase.directoryBonus(self)
+    return application.dir_data..'bonus'
+end
+
+function ManagerCacheBase.fileNameBonus(self)
+    return 'bonus.json'
+end
+
+function ManagerCacheBase.directoryBonusEnergy(self)
+    return application.dir_data..'bonus'
+end
+
+function ManagerCacheBase.fileNameBonusEnergy(self)
+    return 'bonus_energy.json'
+end
+
+function ManagerCacheBase.fileNameVersion(self)
+    return 'version.json'
+end
+
+--
 -- Methods
 --
 
 function ManagerCacheBase.init(self)
-    self._directoryPlayers          = application.dir_data..'players'
-    self._fileNamePlayerCurrent     = 'player_current.json'
     
-    self._directoryLevelContainers  = application.dir_data..'level_containers'
-    self._fileNameLevelContainer    = 'data.json'
-    self._directoryLevels           = 'levels'
+    local versionData = self:getOrCreateVersionData()
     
-    self._directoryPurchases        = application.dir_data..'purchases'
-    self._fileNamePurchases         = 'purchases.json'
+    self._version = tonumber(versionData.value)
+end
+
+function ManagerCacheBase.getOrCreateVersionData(self)
     
-    self._directoryBonus           = application.dir_data..'bonus'
-    self._fileNameBonus             = 'bonus.json'
+    local result = nil
     
-    self._directoryBonusEnergy      = application.dir_data..'bonus'
-    self._fileNameBonusEnergy       = 'bonus_energy.json'
+    local fileName = string.format('%s', self:fileNameVersion())
     
+    result = JSONHelper.getDataFrom(fileName, system.DocumentsDirectory)
+    
+    if(result == nil)then
+        
+        self:updateVersion(0)
+        
+        result = self:getOrCreateVersionData()()
+    end
+    
+    
+    return result
 end
 
 function ManagerCacheBase.update(self, type, data, callback)
     
     if(type == ERemoteUpdateTypeBase.ERUT_GAME_START)then
         
+        data.version = 1
+        
+        assert(data.version ~= nil)
+        
+        if(tonumber(data.version) > self._version)then
+            --todo: update data
+            self:updateLocalData(data)
+        end
+        
         self:onGameStart(data, callback)
     else
         assert(false, 'TODO: review')
     end
+    
+end
+
+function ManagerCacheBase.updateLocalData(self, data)
+    
+    self:updateLevels(data)
+    
+    --todo: update purchases
+    --todo: update bonus data
+    
+    self:updateVersion(data.version)
+end
+
+
+function ManagerCacheBase.updateLevels(self, data)
+    assert(data.levels                  ~= nil)
+    assert(data.levels.level_containers ~= nil)
+    
+    local resultOK = removeDirectory(self:directoryLevelContainers(), system.DocumentsDirectory)
+    
+    assert(resultOK)
+    
+    local levelContainers = data.levels.level_containers
+    
+    self:saveLevelContainers(levelContainers)
+    
+end
+
+function ManagerCacheBase.updateVersion(self, value)
+    
+    local versionData = 
+    {
+        value = value
+    }
+    
+    JSONHelper.saveDataTo(versionData, self:fileNameVersion())
     
 end
 
@@ -123,7 +228,7 @@ end
 function ManagerCacheBase.getOrCreateBonus(self)
     local result = nil
     
-    local fileName = string.format('%s/%s', self._directoryBonus ,self._fileNameBonus)
+    local fileName = string.format('%s/%s', self:directoryBonus() ,self:fileNameBonus())
     
     result = JSONHelper.getDataFrom(fileName, system.DocumentsDirectory)
     
@@ -142,7 +247,7 @@ end
 function ManagerCacheBase.getOrCreateBonusEnergy(self)
     local result = nil
     
-    local fileName = string.format('%s/%s', self._directoryBonusEnergy, self._fileNameBonusEnergy)
+    local fileName = string.format('%s/%s', self:directoryBonusEnergy(), self:fileNameBonusEnergy())
     
     result = JSONHelper.getDataFrom(fileName, system.DocumentsDirectory)
     
@@ -163,7 +268,7 @@ end
 function ManagerCacheBase.getOrCreatePurchases(self)
     local result = nil
     
-    local fileName = string.format('%s/%s', self._directoryPurchases, self._fileNamePurchases)
+    local fileName = string.format('%s/%s', self:directoryPurchases(), self:fileNamePurchases())
     
     result = JSONHelper.getDataFrom(fileName, system.DocumentsDirectory)
     
@@ -182,7 +287,7 @@ end
 function ManagerCacheBase.getOrCreatePlayerCurrent(self)
     local result = nil
     
-    local fileName = string.format('%s/%s', self._directoryPlayers, self._fileNamePlayerCurrent)
+    local fileName = string.format('%s/%s', self:directoryPlayers(), self:fileNamePlayerCurrent())
     
     result = JSONHelper.getDataFrom(fileName, system.DocumentsDirectory)
     
@@ -201,17 +306,17 @@ end
 function ManagerCacheBase.getOrCreateLevelContainers(self)
     local result = {}
     
-    local subDirs = getAllFilesInDirectory(self._directoryLevelContainers, system.DocumentsDirectory)
+    local subDirs = getAllFilesInDirectory(self:directoryLevelContainers(), system.DocumentsDirectory)
     
     for i, childName in ipairs(subDirs)do
         
-        local isDirectory = getIsDirectory(string.format('%s/%s', self._directoryLevelContainers, childName), system.DocumentsDirectory)
+        local isDirectory = getIsDirectory(string.format('%s/%s', self:directoryLevelContainers(), childName), system.DocumentsDirectory)
         
         if(childName == '.' or childName == '..')then
             --do nothing
         elseif(isDirectory)then
             --try load container
-            local dataLevelContainer =  self:tryLoadLevelContainerData(string.format('%s/%s', self._directoryLevelContainers, childName))
+            local dataLevelContainer =  self:tryLoadLevelContainerData(string.format('%s/%s', self:directoryLevelContainers(), childName))
             
             if(dataLevelContainer ~= nil)then
                 table.insert(result, dataLevelContainer)
@@ -248,7 +353,7 @@ function ManagerCacheBase.tryLoadLevelContainerData(self, dirContainer)
         
         local childPath = string.format("%s/%s", dirContainer, childName)
         
-        if(childName == self._directoryLevels)then
+        if(childName == self:directoryLevels())then
             
             if(getIsDirectory(childPath, system.DocumentsDirectory))then
                 --found levels data
@@ -279,7 +384,7 @@ function ManagerCacheBase.tryLoadLevelContainerData(self, dirContainer)
                 
             end
             
-        elseif(childName == self._fileNameLevelContainer)then
+        elseif(childName == self:fileNameLevelContainer())then
             --found level container data
             dataLevelContainer = JSONHelper.getDataFrom(childPath, system.DocumentsDirectory)
             
@@ -299,7 +404,7 @@ end
 function ManagerCacheBase.savePlayerCurrent(self, data)
     assert(data ~= nil)
     
-    local fileName = string.format('%s/%s', self._directoryPlayers, self._fileNamePlayerCurrent)
+    local fileName = string.format('%s/%s', self:directoryPlayers(), self:fileNamePlayerCurrent())
     
     JSONHelper.saveDataTo(data, fileName)
 end
@@ -313,12 +418,12 @@ function ManagerCacheBase.saveLevelContainers(self, dataLevelContainers)
         for levelIndex = 1, #dataLevelContainer.levels, 1 do 
             local dataLevel = dataLevelContainer.levels[levelIndex]
             
-            JSONHelper.saveDataTo(dataLevel, string.format("%s/%i/%s/%i.json", self._directoryLevelContainers, i, self._directoryLevels, levelIndex))
+            JSONHelper.saveDataTo(dataLevel, string.format("%s/%i/%s/%i.json", self:directoryLevelContainers(), i, self:directoryLevels(), levelIndex))
         end
         
         dataLevelContainer.levels = nil
         
-        JSONHelper.saveDataTo(dataLevelContainer, string.format('%s/%i/%s', self._directoryLevelContainers, i, self._fileNameLevelContainer))
+        JSONHelper.saveDataTo(dataLevelContainer, string.format('%s/%i/%s', self:directoryLevelContainers(), i, self:fileNameLevelContainer()))
         
     end
     

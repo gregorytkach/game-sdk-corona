@@ -5,6 +5,7 @@ require('sdk.core.JSONHelper')
 
 require('sdk.controllers.EControllerUpdateBase')
 
+require('sdk.models.ad.ManagerAdBase')
 require("sdk.models.states.ManagerStatesBase")
 require("sdk.models.levels.ManagerLevelsBase")
 require("sdk.models.purchases.ManagerPurchasesBase")
@@ -123,6 +124,9 @@ function GameInfoBase.managerCache(self)
     return self._managerCache
 end
 
+function GameInfoBase.managerAd(self)
+    return self._managerAd
+end
 
 function GameInfoBase:instance(self)
     return _instance
