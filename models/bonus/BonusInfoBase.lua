@@ -32,7 +32,7 @@ function BonusInfoBase.deserialize(self, data)
     assert(data["type"]             ~= nil)
     assert(data["content_count"]    ~= nil)
     
-    self._contentCount  = data["content_count"]
+    self._contentCount  = tonumber(data["content_count"])
     self._type          = data["type"]
     
 end

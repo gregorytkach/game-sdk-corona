@@ -70,8 +70,8 @@ function ManagerBonusBase.deserialize(self, data)
     
     assert(data.bonuses      ~= nil)
     
-    self._timePeriod    = data.time_period
-    self._timeLeft      = data.time_left
+    self._timePeriod    = tonumber(data.time_period)
+    self._timeLeft      = tonumber(data.time_left)
     
     for i, bonusData in ipairs(data["bonuses"]) do
         

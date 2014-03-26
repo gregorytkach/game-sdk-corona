@@ -76,7 +76,7 @@ function LevelContainerBase.deserialize(self, data)
     assert(data.levels          ~= nil)
     
     self._id            = data.id
-    self._number        = data.number
+    self._number        = tonumber(data.number)
     self._name          = data.name
     
     self._requirements = {}

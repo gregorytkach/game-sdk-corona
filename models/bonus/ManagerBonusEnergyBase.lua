@@ -66,7 +66,7 @@ function ManagerBonusEnergyBase.deserialize(self, data)
     
     assert(data.limit           ~= nil)
     
-    self._limit = data.limit
+    self._limit = tonumber(data.limit)
     
     --todo: review
 --    self:timerEnergyStart()

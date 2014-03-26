@@ -83,7 +83,7 @@ function PlayerInfoBase.deserialize(self, data)
     assert(data.currency_soft                   ~= nil)
     assert(data.energy                          ~= nil)
     
-    self._currencySoft  = data.currency_soft
-    self._energy        = data.energy 
+    self._currencySoft  = tonumber(data.currency_soft)
+    self._energy        = tonumber(data.energy)
     
 end

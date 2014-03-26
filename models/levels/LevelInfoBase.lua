@@ -35,8 +35,8 @@ function LevelInfoBase.deserialize(self, data)
     assert(data.reward_scores           ~= nil)
     assert(data.progress                ~= nil)
     
-    self._rewardCurrencySoft    = data.reward_currency_soft
-    self._rewardScores          = data.reward_scores
+    self._rewardCurrencySoft    = tonumber(data.reward_currency_soft)
+    self._rewardScores          = tonumber(data.reward_scores)
     
     self:initLevelProgress(data.progress)
 end

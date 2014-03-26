@@ -59,9 +59,9 @@ function PurchaseItemBase.deserialize(self, data)
     assert(data.type            ~= nil)
     
     
-    self._contentCount  = data.content_count
-    self._priceSoft     = data.price_soft
-    self._priceHard     = data.price_hard
+    self._contentCount  = tonumber(data.content_count)
+    self._priceSoft     = tonumber(data.price_soft)
+    self._priceHard     = tonumber(data.price_hard)
     self._name          = data.name
     self._type          = data.type
     
