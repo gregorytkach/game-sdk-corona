@@ -119,7 +119,12 @@ function ManagerCacheBase.update(self, type, data, callback)
     
     if(type == ERemoteUpdateTypeBase.ERUT_GAME_START)then
         
-        data.version = 1
+        if(data == nil)then
+            data = 
+            {
+                version = self._version
+            }
+        end
         
         assert(data.version ~= nil)
         
