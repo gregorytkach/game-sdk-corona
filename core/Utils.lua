@@ -1,3 +1,5 @@
+require('sdk.core.ELuaType')
+
 local lfs = require 'lfs'
 
 
