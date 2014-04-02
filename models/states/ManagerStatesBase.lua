@@ -54,7 +54,7 @@ function ManagerStatesBase.onStateGone(self)
     
     if(needCleanupPrevState) then
         if( prevStateType == self._nextStateType)then
-            print(string.format('[WARNING]: set state %s after same', prevStateType))
+            print(string.format('set state %s after same', prevStateType), ELogLevel.ELL_WARNING)
         end
         
         local prevStateName = self:_getStatePath(prevStateType)

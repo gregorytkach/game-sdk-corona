@@ -4,6 +4,10 @@ ManagerGameBase = classWithSuper(Object, 'ManagerGameBase')
 --Properties
 --
 
+function ManagerGameBase.isPlayerWin(self)
+    return self._isPlayerWin
+end
+
 function ManagerGameBase.bonusesCollected(self)
     return self._bonusesCollected
 end
@@ -49,6 +53,27 @@ function ManagerGameBase.onGameEnd(self)
     
     self._currentState:update(EControllerUpdateBase.ECUT_GAME_FINISHED)
 end
+
+function ManagerGameBase.onPlayerWin(self)
+    self._isPlayerWin = true
+    
+    local playerCurrent = GameInfo:instance():managerPlayers():playerCurrent()
+    
+    playerCurrent:setCurrencySoft(playerCurrent:currencySoft() + self._currentLevel:rewardCurrencySoft())
+    
+    --todo: reimplement
+    self._currentLevel:progress()._isComplete = true
+    
+    self:onGameEnd()
+    
+end
+
+function ManagerGameBase.onPlayerLose(self)
+    self._isPlayerWin = false
+    
+    self:onGameEnd()
+end
+
 
 --
 --Methods

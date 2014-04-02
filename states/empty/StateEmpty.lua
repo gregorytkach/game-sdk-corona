@@ -36,7 +36,7 @@ function StateEmpty.update(self, updateType)
                     sourceView.y = display.contentCenterY
                     
                 else
-                    print(string.format("[WARNING]: class %s has nil source view ", object:className())) 
+                    print(string.format("class %s has nil source view ", object:className()), ELogLevel.ELL_WARNING) 
                 end
             end
         end
@@ -47,7 +47,7 @@ function StateEmpty.update(self, updateType)
     elseif(updateType == EControllerUpdateBase.ECUT_SCENE_EXIT)then
         --do nothing
     else
-        print(string.format("[WARNING]: receive update %s on empty state.", updateType))
+        print(string.format("receive update %s on empty state.", updateType), ELogLevel.ELL_WARNING)
     end
     
 end

@@ -44,7 +44,7 @@ function ViewParticle.init(self, params)
         assert(particleParams.duration ~= nil)
         
         for i, path in ipairs(particleParams.imagePaths) do
-            assert(isFileExists(path), '[WARNING]: File not found: '..path) 
+            assert(isFileExists(path), 'File not found: '..path, ELogLevel.ELL_WARNING) 
         end
         
         managerParticles:particleProvider().SetParticleProperty(particleParams.particleType, "imagePath", particleParams.imagePaths)

@@ -52,18 +52,12 @@ end
 function PurchaseItemBase.deserialize(self, data)
     SerializableObject.deserialize(self, data)
     
-    assert(data.content_count   ~= nil)
-    assert(data.price_soft      ~= nil)
-    assert(data.price_hard      ~= nil)
-    assert(data.name            ~= nil)
-    assert(data.type            ~= nil)
+    self._contentCount  = tonumber(assertProperty(data, "content_count"))
+    self._priceSoft     = tonumber(assertProperty(data, "price_soft"))
+    self._priceHard     = tonumber(assertProperty(data, "price_hard"))
     
-    
-    self._contentCount  = tonumber(data.content_count)
-    self._priceSoft     = tonumber(data.price_soft)
-    self._priceHard     = tonumber(data.price_hard)
-    self._name          = data.name
-    self._type          = data.type
+    self._name          = assertProperty(data, "name")
+    self._type          = assertProperty(data, "type")
     
 end
 

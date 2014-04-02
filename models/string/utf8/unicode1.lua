@@ -66,8 +66,6 @@ for i = 1, string.lenUnicode( word ) do
     print( string.subUnicode( word, i, i ) )
 end
 
-print(1)
-
 local result = utf8.len(word)
 
 for i = 1, result do

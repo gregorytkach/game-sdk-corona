@@ -31,10 +31,6 @@ function utf8.charbytes(s, i)
         result = 4
     end
     
-    if(result == 0)then
-        print(1)
-    end
-    
     assert(result > 0)
     
     return result

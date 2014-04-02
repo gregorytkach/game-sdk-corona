@@ -29,10 +29,6 @@ end
 --
 
 function Controller.init(self, params)
-    if(params == nil)then
-        print(1)
-    end
-    
     assert(params ~= nil)
     assert(params.view ~= nil)
     

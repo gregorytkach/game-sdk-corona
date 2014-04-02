@@ -41,7 +41,7 @@ function GameInfoBase.initGameInfo(class)
     local isFirstRun = _instance == nil
     
     if(not isFirstRun)then
-        print("[WARNING]: GameInfoBase:instance() already established.")
+        print("GameInfoBase:instance() already established.", ELogLevel.ELL_WARNING)
         _instance:cleanup()
         _instance = nil
     else

@@ -35,13 +35,13 @@ function JSONHelper.getDataFrom(fileName, baseDir)
     local path = system.pathForFile(fileName, baseDir)
     
     if(path == nil)then
-        print(string.format("[WARNING]: not found file %s", fileName))
+        print(string.format("not found file %s", fileName), ELogLevel.ELL_WARNING)
     else
         -- io.open opens a file at path. returns nil if no file found
         local fileHandler, errorMessage = io.open(path, "r")
         
         if fileHandler == nil then
-            print(string.format("[WARNING]: cant open file %s for read.\nError: %s", path, errorMessage))
+            print(string.format("cant open file %s for read.\nError: %s", path, errorMessage), ELogLevel.ELL_WARNING)
         else
             -- read all contents of file into a string
             local contents = fileHandler:read("*a")
@@ -79,7 +79,7 @@ function JSONHelper.saveDataTo(data, fileName, baseDir)
     local content = json.encode(data)
     
     if(content == nil)then
-        print('[WARNING]: cant encode data to json '..fileName)
+        print('cant encode data to json '..fileName, ELogLevel.ELL_WARNING)
     else
         
         createParentDirectories(fileName, baseDir)
@@ -87,13 +87,13 @@ function JSONHelper.saveDataTo(data, fileName, baseDir)
         local path = system.pathForFile(fileName, baseDir)
         
         if(path == nil)then
-            print('[WARNING]: cant save data to file '..fileName)
+            print('cant save data to file\n'..fileName, ELogLevel.ELL_WARNING)
         else
             
             local fileHandler, errorMessage = io.open(path, "w")
             
             if(fileHandler == nil)then
-                print(string.format("[WARNING]: cant open file %s for write. Error: %s", path, errorMessage))
+                print(string.format("cant open file %s for write. Error: %s", path, errorMessage), ELogLevel.ELL_WARNING)
             else
                 
                 fileHandler:write(content)
@@ -101,7 +101,7 @@ function JSONHelper.saveDataTo(data, fileName, baseDir)
                 io.close(fileHandler)
                 
                 if(application.debug)then
-                    print(string.format("Save data to file %s success", path))
+                    print("Save data to file success \n"..path)
                 end
                 
                 result = true

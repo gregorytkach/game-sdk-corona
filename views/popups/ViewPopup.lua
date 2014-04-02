@@ -29,6 +29,11 @@ function ViewPopup.setButtonClose(self, view)
 end
 
 function ViewPopup.cleanup(self)
+    
+    if(self._buttonClose == nil)then
+        print("set breakpoint here")
+    end
+    
     self._buttonClose:cleanup()
     self._buttonClose = nil
     

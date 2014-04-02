@@ -83,6 +83,15 @@ function RemoteConnector.update(self, updateType, data, callback, methodType, co
     local response = Response:new()
     response:deserialize(responseData)
     
+    if(response:status() == EResponseType.ERT_ERROR)then
+        print("Server response error", ELogLevel.ELL_WARNING)
+        
+        local responseString = getString(response:response())
+        
+        print(responseString)
+        
+    end
+    
     if(callback ~= nil)then
         callback(response) 
     end

@@ -20,6 +20,10 @@ function LevelInfoBase.progress(self)
     return self._progress
 end
 
+function LevelInfoBase.number(self)
+    return self._number
+end
+
 --
 --Methods
 --
@@ -31,12 +35,16 @@ end
 function LevelInfoBase.deserialize(self, data)
     SerializableObject.deserialize(self, data)
     
-    assert(data.reward_currency_soft    ~= nil)
-    assert(data.reward_scores           ~= nil)
+    if(data.number == nil)then
+        print('Not found number for level info base. Use by default 1. TODO: remove it after implement on server side', ELogLevel.ELL_WARNING)
+        data.number = 1
+    end
+    
     assert(data.progress                ~= nil)
     
-    self._rewardCurrencySoft    = tonumber(data.reward_currency_soft)
-    self._rewardScores          = tonumber(data.reward_scores)
+    self._rewardCurrencySoft    = tonumber(assertProperty(data, 'reward_currency_soft'))
+    self._rewardScores          = tonumber(assertProperty(data, 'reward_scores'))
+    self._number                = tonumber(assertProperty(data, 'number'))
     
     self:initLevelProgress(data.progress)
 end

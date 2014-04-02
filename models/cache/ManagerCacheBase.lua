@@ -6,7 +6,9 @@ ManagerCacheBase = classWithSuper(Object, 'ManagerCacheBase')
 --
 -- Properties
 --
-
+function ManagerCacheBase.version(self)
+    return self._version
+end
 
 function ManagerCacheBase.needManageMemory(self)
     return false
@@ -94,6 +96,10 @@ function ManagerCacheBase.init(self)
     local versionData = self:getOrCreateVersionData()
     
     self._version = tonumber(versionData.value)
+    
+    print('remove after debug')
+    print('use version 0')
+    self._version = 0
 end
 
 function ManagerCacheBase.getOrCreateVersionData(self)
@@ -108,7 +114,7 @@ function ManagerCacheBase.getOrCreateVersionData(self)
         
         self:updateVersion(0)
         
-        result = self:getOrCreateVersionData()()
+        result = self:getOrCreateVersionData()
     end
     
     
@@ -141,8 +147,16 @@ function ManagerCacheBase.update(self, type, data, callback)
 end
 
 function ManagerCacheBase.updateLocalData(self, data)
+    assert(data.players     ~= nil)
+    assert(data.levels      ~= nil)
+    assert(data.purchases   ~= nil)
     
-    self:updateLevels(data)
+    
+    self:updatePlayers(data.players)
+    self:updateLevels(data.levels)
+    self:updatePurchases(data.purchases)
+    --    self:updateBonus(data)
+    --    self:updateBonusEnergy(data)
     
     --todo: update purchases
     --todo: update bonus data
@@ -150,16 +164,33 @@ function ManagerCacheBase.updateLocalData(self, data)
     self:updateVersion(data.version)
 end
 
+function ManagerCacheBase.updatePlayers(self, data)
+    assert(data.player_current ~= nil)
+    
+    local resultOK = removeDirectory(self:directoryPlayers(), system.DocumentsDirectory)
+    
+    assert(resultOK)
+    
+    self:savePlayerCurrent(data.player_current)
+end
+
+function ManagerCacheBase.updatePurchases(self, data)
+    local resultOK = removeDirectory(self:directoryPurchases(), system.DocumentsDirectory)
+    
+    assert(resultOK)
+    
+    self:savePurchases(data)
+end
+
 
 function ManagerCacheBase.updateLevels(self, data)
-    assert(data.levels                  ~= nil)
-    assert(data.levels.level_containers ~= nil)
+    assert(data.level_containers ~= nil)
     
     local resultOK = removeDirectory(self:directoryLevelContainers(), system.DocumentsDirectory)
     
     assert(resultOK)
     
-    local levelContainers = data.levels.level_containers
+    local levelContainers = data.level_containers
     
     self:saveLevelContainers(levelContainers)
     
@@ -167,12 +198,20 @@ end
 
 function ManagerCacheBase.updateVersion(self, value)
     
+    if(self._version == tonumber(value))then
+        return
+    end
+    
+    self._version = value
+    
     local versionData = 
     {
-        value = value
+        value = self._version
     }
     
     JSONHelper.saveDataTo(versionData, self:fileNameVersion())
+    
+    print('db version updated to '..self._version)
     
 end
 
@@ -278,9 +317,10 @@ function ManagerCacheBase.getOrCreatePurchases(self)
     result = JSONHelper.getDataFrom(fileName, system.DocumentsDirectory)
     
     if(result == nil)then
+        
         local data = self:getDataPurchases()
         
-        JSONHelper.saveDataTo(data, fileName)
+        self:savePurchases(data)
         
         --todo: remove
         result = self:getOrCreatePurchases()
@@ -405,6 +445,15 @@ function ManagerCacheBase.tryLoadLevelContainerData(self, dirContainer)
     
     return result
 end
+
+function ManagerCacheBase.savePurchases(self, data)
+    assert(data ~= nil)
+    
+    local fileName = string.format('%s/%s', self:directoryPurchases(), self:fileNamePurchases())
+    
+    JSONHelper.saveDataTo(data, fileName)
+end
+
 
 function ManagerCacheBase.savePlayerCurrent(self, data)
     assert(data ~= nil)

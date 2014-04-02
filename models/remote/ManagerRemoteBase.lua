@@ -75,7 +75,8 @@ end
 function ManagerRemoteBase.getParamsGameStart(self, data)
     local result  = 
     {
-        uuid = application.device_id
+        uuid    = application.device_id,
+        version = GameInfoBase:instance():managerCache():version()
     }
     
     return result

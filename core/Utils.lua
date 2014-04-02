@@ -5,6 +5,24 @@ local lfs = require 'lfs'
 --internal functions
 --
 
+local function isFileExistsInternal(path)
+    local result = false
+    
+    --todo: change open to get attributes
+    
+    local fileHandler, errorMessage = io.open(path, "r")
+    
+    if (fileHandler ~= nil) then 
+        io.close(fileHandler)
+        
+        result = true 
+    else
+        print(string.format("Not found file : %s \n %s", path, errorMessage), ELogLevel.ELL_WARNING)
+    end 
+    
+    return result
+end
+
 local function getAllFilesInternal(path)
     local result = {}
     
@@ -20,6 +38,13 @@ local function getIsDirectoryInternal(filePath)
 end
 
 local function removeDirectoryInternal(path)
+    assert(path ~= nil)
+    
+    if(not isFileExistsInternal(path))then
+        print('Dir not exists. Nothing to remove.\n'..path, ELogLevel.ELL_WARNING)
+        return true
+    end
+    
     assert(getIsDirectoryInternal(path))
     
     local result = true
@@ -37,7 +62,8 @@ local function removeDirectoryInternal(path)
                 result = removeDirectoryInternal(filePath)
                 
                 if(result)then
-                    print('Dir remove success: '..filePath)
+                    print('Dir remove success:')
+                    print(filePath)
                 else
                     break
                 end
@@ -48,10 +74,9 @@ local function removeDirectoryInternal(path)
                 result = resultOK ~= nil
                 
                 if( result)then
-                    print('File remove success: '..filePath)
+                    print('File remove success:\n'..filePath)
                 else
-                    print('File remove error: '..filePath)
-                    print(string.format('Error: %s', errorMsg))
+                    print('File remove error\n'..filePath..'\n'..errorMsg)
                     
                     break
                 end
@@ -66,10 +91,9 @@ local function removeDirectoryInternal(path)
         result = resultOK ~= nil
         
         if(result)then
-            print('Dir remove success: '..path)
+            print('Dir remove success\n'..path)
         else
-            print('Dir remove error: '..path)
-            print(string.format('Error: %s', errorMsg))
+            print('Dir remove error\n'..path..'\n'..errorMsg)
         end
         
     end
@@ -80,6 +104,31 @@ end
 --
 --public functions
 --
+
+function getString(data)
+    local result = ""
+    
+    local dataType = type(data)
+    
+    if( dataType == ELuaType.ELT_NUMBER  or 
+        dataType == ELuaType.ELT_STRING  or 
+        dataType == ELuaType.ELT_BOOLEAN or
+        dataType == ELuaType.ELT_NIL)then
+        
+        result = tostring(data)
+        
+    elseif(dataType == ELuaType.ELT_TABLE)then
+        
+        for key, value in pairs(data)do
+            result = result..getString(key)..'='..getString(value)..'\n'
+        end
+        
+    else
+        assert(false)
+    end
+    
+    return result
+end
 
 function isSimulator()
     return "simulator" == system.getInfo("environment")
@@ -144,21 +193,15 @@ function isFileExists(fileName, baseDir)
     local filePath = system.pathForFile(fileName, baseDir)
     
     if(filePath ~= nil)then
-        local fileHandler, errorMessage = io.open(filePath, "r")
-        
-        if (fileHandler ~= nil) then 
-            io.close(fileHandler)
-            
-            result = true 
-        else
-            print(string.format("[WARNING]:Not found file : %s \n %s", filePath, errorMessage))
-        end 
+        result = isFileExistsInternal(filePath)
     else
-        print(string.format("[WARNING]:Not found file : %s", fileName))
+        print(string.format("Not found file : %s", fileName), ELogLevel.ELL_WARNING)
     end
     
     return result
 end
+
+
 
 function getFileExtension(filePath)
     local _, _, fileExtension  = string.match(filePath, "(.-)([^\\/]-%.?([^%.\\/]*))$")
@@ -205,7 +248,7 @@ function createParentDirectories(fileName, baseDir)
         
         local isDirectoryCreate =  lfs.mkdir(dirPath)
         if(isDirectoryCreate == true)then
-            print("Directory created "..dirPath)
+            print("Directory created\n"..dirPath)
         end
         
     end
@@ -283,6 +326,12 @@ end
 -- remove directory recursively
 -- return true if remove success
 function removeDirectory(fileName, baseDir)
+    if(not isFileExists(fileName, baseDir))then
+        print('Dir not exists. Nothing to remove.\n'..fileName, ELogLevel.ELL_WARNING)
+        
+        return true
+    end
+    
     assert(getIsDirectory(fileName, baseDir))
     
     local result =  removeDirectoryInternal(system.pathForFile(fileName, baseDir))
