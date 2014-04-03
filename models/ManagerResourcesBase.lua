@@ -101,8 +101,9 @@ function ManagerResourcesBase._getAnimation(self, resourceType, param, scale)
         sheetImage = string.format(self._resources[resourceType], application.dir_assets, param, application.scaleSuffix)
     end
     
-    
-    assert(Utils.isFileExists(sheetImage))
+    if(application.platform_type ~= EPlatformType.EPT_ANDROID)then
+        assert(Utils.isFileExists(sheetImage))
+    end
     
     local imageExtention        = getFileExtension(sheetImage)
     

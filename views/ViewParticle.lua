@@ -43,9 +43,11 @@ function ViewParticle.init(self, params)
         assert(particleParams.rate ~= nil)
         assert(particleParams.duration ~= nil)
         
-        for i, path in ipairs(particleParams.imagePaths) do
-            assert(isFileExists(path), 'File not found: '..path, ELogLevel.ELL_WARNING) 
-        end
+        if(application.platform_type ~= EPlatformType.EPT_ANDROID)then
+            for i, path in ipairs(particleParams.imagePaths) do
+                assert(isFileExists(path), 'File not found: '..path, ELogLevel.ELL_WARNING) 
+            end
+        end       
         
         managerParticles:particleProvider().SetParticleProperty(particleParams.particleType, "imagePath", particleParams.imagePaths)
         
