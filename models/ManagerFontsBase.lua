@@ -39,7 +39,10 @@ function ManagerFontsBase.loadFont(self, fontType, fontPath, fontImage, fontSize
     assert(self._loadedFonts[fontType] == nil, 'font already loaded')
     
     assert(Utils.isFileExists(fontPath))
-    assert(Utils.isFileExists(fontImage))
+    
+    if(application.platform_type ~= EPlatformType.EPT_ANDROID)then
+        assert(Utils.isFileExists(fontImage))
+    end
     
     self._textProvider.AddCharsetFromBMF(fontType, fontPath, fontImage, "", fontSize)
     

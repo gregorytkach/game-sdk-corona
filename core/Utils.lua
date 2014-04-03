@@ -17,6 +17,36 @@ local lfs = require 'lfs'
 -- Methods
 --
 
+function Utils.getPlatformType()
+    local result = system.getInfo("platformName")
+    
+--    if( systemName == 'Mac OS X'  or
+--        systemName == 'iPhone OS')then
+--        
+--        result = EPlatformType.EPT_UNIX
+--        
+--    elseif( systemName == 'Win' or 
+--            systemName == 'Android')then
+--        
+--        result = EPlatformType.EPT_WIN
+--        
+--    else
+----        local path = system.pathForFile('', system.ResourceDirectory)
+----        
+----        local directoryHandler = io.open(path)
+----        
+----        if(directoryHandler == nil)then
+----            result = EPlatformType.EPT_WIN
+----        else
+----            directoryHandler:close()
+----            result = EPlatformType.EPT_UNIX
+----        end 
+--    end
+        
+    return result
+end
+
+
 --check is file exists
 --WARNING: do not use for check directory. For windows it not works properly
 --if base dir not present - try found in resource directory 
@@ -32,6 +62,9 @@ function Utils.isFileExists(fileName, baseDir)
     end
     
     local filePath = system.pathForFile(fileName, baseDir)
+    
+    print('try find:')
+    print(filePath)
     
     if(filePath ~= nil)then
         
@@ -119,13 +152,7 @@ function Utils.getAllFilesInDirectory(dirName, baseDir)
     
     local result = {}
     
-    local needCheckFile = application.platform_type == EPlatformType.EPT_UNIX
-    
-    local fileExists = true
-    
-    if(needCheckFile)then
-        fileExists = Utils.isFileExists(dirName, baseDir)
-    end
+    local fileExists =  Utils.isFileExists(dirName, baseDir)
     
     if(fileExists)then
         
