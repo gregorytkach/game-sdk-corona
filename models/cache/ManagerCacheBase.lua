@@ -169,19 +169,15 @@ end
 function ManagerCacheBase.updatePlayers(self, data)
     assert(data.player_current ~= nil)
     
-    Utils.removeDirectoryOrFile(self:directoryPlayers()..'/asdasd.txt', system.DocumentsDirectory)
-    
-    local resultOK = Utils.removeDirectoryOrFile(self:directoryPlayers(), system.DocumentsDirectory)
-    
-    assert(resultOK)
+    --try remove old data
+    Utils.removeDirectoryOrFile(self:directoryPlayers(), system.DocumentsDirectory)
     
     self:savePlayerCurrent(data.player_current)
 end
 
 function ManagerCacheBase.updatePurchases(self, data)
-    local resultOK = Utils.removeDirectoryOrFile(self:directoryPurchases(), system.DocumentsDirectory)
-    
-    assert(resultOK)
+    --try remove old data
+    Utils.removeDirectoryOrFile(self:directoryPurchases(), system.DocumentsDirectory)
     
     self:savePurchases(data)
 end
@@ -190,9 +186,8 @@ end
 function ManagerCacheBase.updateLevels(self, data)
     assert(data.level_containers ~= nil)
     
-    local resultOK = Utils.removeDirectoryOrFile(self:directoryLevelContainers(), system.DocumentsDirectory)
-    
-    assert(resultOK)
+    --try remove old data
+    Utils.removeDirectoryOrFile(self:directoryLevelContainers(), system.DocumentsDirectory)
     
     local levelContainers = data.level_containers
     
