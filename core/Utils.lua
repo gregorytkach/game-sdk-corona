@@ -36,20 +36,7 @@ function Utils.isFileExists(fileName, baseDir)
     if(filePath ~= nil)then
         
         local mode =    lfs.attributes(filePath, "mode")
-        print(mode)
         result = mode ~= nil
-        
-        --todo: change open to get attributes
-        local fileHandler, errorMessage = io.open(filePath, "r")
-        
-        if (fileHandler ~= nil) then 
-            io.close(fileHandler)
-            
-            result = true 
-        else
-            print(string.format("Error: %s", errorMessage), ELogLevel.ELL_WARNING)
-        end 
-        
     end
     
     if(not result)then
