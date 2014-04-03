@@ -169,6 +169,8 @@ end
 function ManagerCacheBase.updatePlayers(self, data)
     assert(data.player_current ~= nil)
     
+    Utils.removeDirectoryOrFile(self:directoryPlayers()..'/asdasd.txt', system.DocumentsDirectory)
+    
     local resultOK = Utils.removeDirectoryOrFile(self:directoryPlayers(), system.DocumentsDirectory)
     
     assert(resultOK)

@@ -34,6 +34,11 @@ function Utils.isFileExists(fileName, baseDir)
     local filePath = system.pathForFile(fileName, baseDir)
     
     if(filePath ~= nil)then
+        
+        local mode =    lfs.attributes(filePath, "mode")
+        print(mode)
+        result = mode ~= nil
+        
         --todo: change open to get attributes
         local fileHandler, errorMessage = io.open(filePath, "r")
         
