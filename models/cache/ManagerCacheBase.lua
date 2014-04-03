@@ -134,11 +134,7 @@ function ManagerCacheBase.update(self, type, data, callback)
         
         assert(data.version ~= nil)
         
-        --todo: remove 
-        data.version = self._version + 1
-        
         if(tonumber(data.version) > self._version)then
-            --todo: update data
             self:updateLocalData(data)
         end
         

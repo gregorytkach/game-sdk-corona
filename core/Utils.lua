@@ -282,12 +282,6 @@ function createParentDirectories(fileName, baseDir)
 end
 
 
-
-
-
-
-
-
 function getClone(data)
     assert(data ~= nil)
     
