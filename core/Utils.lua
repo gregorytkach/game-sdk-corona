@@ -1,133 +1,109 @@
 require('sdk.core.ELuaType')
+require('sdk.core.Object')
+
+Utils = classWithSuper(Object, 'Utils')
+
+--
+-- Static fields
+--
 
 local lfs = require 'lfs'
 
 --
---internal functions
+-- Properties
 --
 
-----------------------------------------------------------------------------------
--- doesFileExist
 --
--- Checks to see if a file exists in the path.
+-- Methods
 --
--- Enter:   name = file name
---  path = path to file (directory)
---  defaults to ResourceDirectory if "path" is missing.
---
--- Returns: true = file exists, false = file not found
-----------------------------------------------------------------------------------
---
---function doesFileExist( fname, path )
---
---    local results = false
---
---    local filePath = system.pathForFile( fname, path )
---
---    -- filePath will be nil if file doesn't exist and the path is ResourceDirectory
---    --
---    if filePath then
---        filePath = io.open( filePath, "r" )
---    end
---
---    if  filePath then
---        print( "File found -> " .. fname )
---        -- Clean up our file handles
---        filePath:close()
---        results = true
---    else
---        print( "File does not exist -> " .. fname )
---    end
---
---    print()
---
---    return results
---end
 
-local function isFileExistsInternal(path)
+--check is file exists
+--WARNING: do not use for check directory. For windows it not works properly
+--if base dir not present - try found in resource directory 
+function Utils.isFileExists(fileName, baseDir)
+    
+    assert(fileName ~= nil)
+    
     local result = false
     
-    print('isFileExistsInternal')
-    print(path)
+    if(baseDir == nil)then
+        print('Utils:isFileExists. base dir not specified. Use resource dir by default')
+        baseDir = system.ResourceDirectory
+    end
     
-    --todo: change open to get attributes
+    local filePath = system.pathForFile(fileName, baseDir)
     
-    local fileHandler, errorMessage = io.open(path, "r")
-    
-    if (fileHandler ~= nil) then 
-        io.close(fileHandler)
+    if(filePath ~= nil)then
+        --todo: change open to get attributes
+        local fileHandler, errorMessage = io.open(filePath, "r")
         
-        result = true 
-    else
-        print(string.format("Not found file : %s \n %s", path, errorMessage), ELogLevel.ELL_WARNING)
-    end 
+        if (fileHandler ~= nil) then 
+            io.close(fileHandler)
+            
+            result = true 
+        else
+            print(string.format("Error: %s", errorMessage), ELogLevel.ELL_WARNING)
+        end 
+        
+    end
     
-    return result
-end
-
-local function getAllFilesInternal(path)
-    local result = {}
-    
-    for fileName in lfs.dir(path) do
-        table.insert(result, fileName)
+    if(not result)then
+        print(string.format("Not found file : %s", filePath), ELogLevel.ELL_WARNING)
     end
     
     return result
 end
 
-local function getIsDirectoryInternal(filePath)
-    return  lfs.attributes(filePath, "mode") == "directory"
+--returns true if path is directory
+--if path not exists -> for unix returns false, for windows returns true
+function Utils.getIsDirectory(fileName, baseDir)
+    assert(fileName ~= nil)
+    assert(baseDir ~= nil)
+    
+    local result = false
+    
+    local path = system.pathForFile(fileName, baseDir)
+    
+    result = lfs.attributes(path, "mode") == "directory"
+    
+    return result
 end
 
-local function removeDirectoryInternal(path)
-    assert(path ~= nil)
+-- remove directory recursively
+-- return true if remove success
+function Utils.removeDirectoryOrFile(targetName, baseDir)
+    assert(targetName   ~= nil)
+    assert(baseDir      ~= nil)
     
-    if(not isFileExistsInternal(path))then
-        print('Dir not exists. Nothing to remove.\n'..path, ELogLevel.ELL_WARNING)
-        return true
+    if(not Utils.isFileExists(targetName, baseDir))then
+        print('File not exists. Nothing to remove.\n'..targetName, ELogLevel.ELL_WARNING)
+        
+        return false
     end
-    
-    --todo: review
-    if(system.getInfo("platformName") ~= 'Android')then
-        assert(getIsDirectoryInternal(path))
-    end 
     
     local result = true
     
-    local filesInDir = getAllFilesInternal(path)
+    local path  = system.pathForFile(targetName, baseDir)
     
-    for _, fileName in ipairs(filesInDir) do
+    if(Utils.getIsDirectory(targetName, baseDir))then
         
-        if(fileName ~= '.' and fileName ~= '..')then
+        print(targetName..' is a directory')
+        
+        --remove subfiles and subdirectories
+        local filesInDir = Utils.getAllFilesInDirectory(targetName, baseDir)
+        
+        for _, fileName in ipairs(filesInDir) do
             
-            local filePath = path..'/'..fileName
+            local filePath = targetName..'/'..fileName
             
-            if(getIsDirectoryInternal(filePath))then
-                
-                result = removeDirectoryInternal(filePath)
-                
-                if(result)then
-                    print('Dir remove success:')
-                    print(filePath)
-                else
-                    break
-                end
-            else
-                
-                local resultOK, errorMsg = os.remove(filePath)
-                
-                result = resultOK ~= nil
-                
-                if( result)then
-                    print('File remove success:\n'..filePath)
-                else
-                    print('File remove error\n'..filePath..'\n'..errorMsg)
-                    
-                    break
-                end
-                
+            result = Utils.removeDirectoryOrFile(filePath, baseDir)
+            
+            if(not result)then
+                break
             end
+            
         end
+        
     end
     
     if(result)then
@@ -136,15 +112,51 @@ local function removeDirectoryInternal(path)
         result = resultOK ~= nil
         
         if(result)then
-            print('Dir remove success\n'..path)
+            print('File remove success\n'..path)
         else
-            print('Dir remove error\n'..path..'\n'..errorMsg)
+            print('File remove error\n'..path..'\n'..errorMsg)
+        end
+    end
+    
+    return result
+end
+
+function Utils.getAllFilesInDirectory(dirName, baseDir)
+    assert(dirName ~= nil)
+    assert(baseDir ~= nil)
+    
+    local result = {}
+    
+    local needCheckFile = application.platform_type == EPlatformType.EPT_UNIX
+    
+    local fileExists = true
+    
+    if(needCheckFile)then
+        fileExists = Utils.isFileExists(dirName, baseDir)
+    end
+    
+    if(fileExists)then
+        
+        local path = system.pathForFile(dirName, baseDir)
+        
+        for fileName in lfs.dir(path) do
+            
+            if(fileName ~= '.' and fileName ~= '..')then
+                table.insert(result, fileName)
+            end
         end
         
     end
     
     return result
 end
+
+--
+--internal functions
+--
+
+
+
 
 --
 --public functions
@@ -222,32 +234,7 @@ function unrequire(m)
     return result
 end
 
---check is file exists
---WARNING: do not use for check directory. For windows it not works properly
---if base dir not present - try found in resource directory 
-function isFileExists(fileName, baseDir)
-    
-    assert(fileName ~= nil)
-    
-    local result = false
-    
-    if(baseDir == nil)then
-        print('remove it. baseDir == nil')
-        baseDir = system.ResourceDirectory
-    end
-    
-    local filePath = system.pathForFile(fileName, baseDir)
-    
-    if(filePath ~= nil)then
-        print('remove it. filePath = '..filePath)
 
-        result = isFileExistsInternal(filePath)
-    else
-        print(string.format("Not found file : %s", fileName), ELogLevel.ELL_WARNING)
-    end
-    
-    return result
-end
 
 
 
@@ -302,93 +289,12 @@ function createParentDirectories(fileName, baseDir)
     end
 end
 
-function getAllFilesInDirectory(dirName, baseDir)
-    assert(dirName ~= nil)
-    assert(baseDir ~= nil)
-    
-    local result = {}
-    
-    local needCheckFile = application.platform_type == EPlatformType.EPT_UNIX
-    
-    local fileExists = true
-    
-    if(needCheckFile)then
-        fileExists = isFileExists(dirName, baseDir)
-    end
-    
-    if(fileExists)then
-        
-        local path = system.pathForFile(dirName, baseDir)
-        
-        result = getAllFilesInternal(path)
-    end
-    
-    return result
-end
-
-
---returns true if path is directory
---if path not exists -> for unix returns false, for windows returns true
-function getIsDirectory(fileName, baseDir)
-    --    assert(fileName ~= nil)
-    --    assert(baseDir ~= nil)
-    --    
-    --    local result = false
-    --    
-    --    local path = system.pathForFile(fileName, baseDir)
-    --    
-    --    local fileHandler, _ = io.open(path, 'r')
-    --    
-    --    if(fileHandler == nil)then
-    --        
-    --        if(application.platform_type == EPlatformType.EPT_WIN)then
-    --            result = true 
-    --        end
-    --        
-    --    else
-    --        
-    --        local _, errorMessage = fileHandler:read(1)
-    --        io.close(fileHandler)
-    --        
-    --        if(errorMessage ~= nil) then
-    --            result = true
-    --        end
-    --    end
-    --    
-    --    return result
-    
-    assert(fileName ~= nil)
-    assert(baseDir ~= nil)
-    
-    local result = false
-    
-    local path = system.pathForFile(fileName, baseDir)
-    
-    result = getIsDirectoryInternal(path)
-    
-    return result
-end
 
 
 
--- remove directory recursively
--- return true if remove success
-function removeDirectory(fileName, baseDir)
-    if(not isFileExists(fileName, baseDir))then
-        print('Dir not exists. Nothing to remove.\n'..fileName, ELogLevel.ELL_WARNING)
-        
-        return true
-    end
-    
-    --todo: review
-    if(system.getInfo("platformName") ~= 'Android')then
-        assert(getIsDirectory(fileName, baseDir))
-    end
-    
-    local result =  removeDirectoryInternal(system.pathForFile(fileName, baseDir))
-    
-    return result
-end
+
+
+
 
 function getClone(data)
     assert(data ~= nil)

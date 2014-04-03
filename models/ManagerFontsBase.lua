@@ -38,8 +38,8 @@ end
 function ManagerFontsBase.loadFont(self, fontType, fontPath, fontImage, fontSize)
     assert(self._loadedFonts[fontType] == nil, 'font already loaded')
     
-    assert(isFileExists(fontPath))
-    assert(isFileExists(fontImage))
+    assert(Utils.isFileExists(fontPath))
+    assert(Utils.isFileExists(fontImage))
     
     self._textProvider.AddCharsetFromBMF(fontType, fontPath, fontImage, "", fontSize)
     

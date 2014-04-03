@@ -134,6 +134,9 @@ function ManagerCacheBase.update(self, type, data, callback)
         
         assert(data.version ~= nil)
         
+        --todo: remove 
+        data.version = self._version + 1
+        
         if(tonumber(data.version) > self._version)then
             --todo: update data
             self:updateLocalData(data)
@@ -158,7 +161,6 @@ function ManagerCacheBase.updateLocalData(self, data)
     --    self:updateBonus(data)
     --    self:updateBonusEnergy(data)
     
-    --todo: update purchases
     --todo: update bonus data
     
     self:updateVersion(data.version)
@@ -167,7 +169,7 @@ end
 function ManagerCacheBase.updatePlayers(self, data)
     assert(data.player_current ~= nil)
     
-    local resultOK = removeDirectory(self:directoryPlayers(), system.DocumentsDirectory)
+    local resultOK = Utils.removeDirectoryOrFile(self:directoryPlayers(), system.DocumentsDirectory)
     
     assert(resultOK)
     
@@ -175,7 +177,7 @@ function ManagerCacheBase.updatePlayers(self, data)
 end
 
 function ManagerCacheBase.updatePurchases(self, data)
-    local resultOK = removeDirectory(self:directoryPurchases(), system.DocumentsDirectory)
+    local resultOK = Utils.removeDirectoryOrFile(self:directoryPurchases(), system.DocumentsDirectory)
     
     assert(resultOK)
     
@@ -186,7 +188,7 @@ end
 function ManagerCacheBase.updateLevels(self, data)
     assert(data.level_containers ~= nil)
     
-    local resultOK = removeDirectory(self:directoryLevelContainers(), system.DocumentsDirectory)
+    local resultOK = Utils.removeDirectoryOrFile(self:directoryLevelContainers(), system.DocumentsDirectory)
     
     assert(resultOK)
     
@@ -350,11 +352,11 @@ end
 function ManagerCacheBase.getOrCreateLevelContainers(self)
     local result = {}
     
-    local subDirs = getAllFilesInDirectory(self:directoryLevelContainers(), system.DocumentsDirectory)
+    local subDirs = Utils.getAllFilesInDirectory(self:directoryLevelContainers(), system.DocumentsDirectory)
     
     for i, childName in ipairs(subDirs)do
         
-        local isDirectory = getIsDirectory(string.format('%s/%s', self:directoryLevelContainers(), childName), system.DocumentsDirectory)
+        local isDirectory = Utils.getIsDirectory(string.format('%s/%s', self:directoryLevelContainers(), childName), system.DocumentsDirectory)
         
         if(childName == '.' or childName == '..')then
             --do nothing
@@ -391,7 +393,7 @@ function ManagerCacheBase.tryLoadLevelContainerData(self, dirContainer)
     local dataLevels            = nil
     local dataLevelContainer    = nil
     
-    local subDirs = getAllFilesInDirectory(dirContainer, system.DocumentsDirectory)
+    local subDirs = Utils.getAllFilesInDirectory(dirContainer, system.DocumentsDirectory)
     
     for i, childName in ipairs(subDirs)do
         
@@ -399,20 +401,20 @@ function ManagerCacheBase.tryLoadLevelContainerData(self, dirContainer)
         
         if(childName == self:directoryLevels())then
             
-            if(getIsDirectory(childPath, system.DocumentsDirectory))then
+            if(Utils.getIsDirectory(childPath, system.DocumentsDirectory))then
                 --found levels data
                 
                 dataLevels = {}
                 
                 --get levels info
-                local levelsFiles =  getAllFilesInDirectory(childPath, system.DocumentsDirectory)
+                local levelsFiles =  Utils.getAllFilesInDirectory(childPath, system.DocumentsDirectory)
                 
                 for levelFileIndex = 1, #levelsFiles, 1 do
                     local levelFile = levelsFiles[levelFileIndex]
                     
                     local levelFilePath = string.format('%s/%s/%s', dirContainer, childName, levelFile)
                     
-                    local isDirectory = getIsDirectory(levelFilePath, system.DocumentsDirectory)
+                    local isDirectory = Utils.getIsDirectory(levelFilePath, system.DocumentsDirectory)
                     
                     local levelData = nil
                     

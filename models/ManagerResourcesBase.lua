@@ -102,7 +102,7 @@ function ManagerResourcesBase._getAnimation(self, resourceType, param, scale)
     end
     
     
-    assert(isFileExists(sheetImage))
+    assert(Utils.isFileExists(sheetImage))
     
     local imageExtention        = getFileExtension(sheetImage)
     
