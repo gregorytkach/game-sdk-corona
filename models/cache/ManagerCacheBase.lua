@@ -193,7 +193,6 @@ function ManagerCacheBase.updateLevels(self, data)
     local levelContainers = data.level_containers
     
     self:saveLevelContainers(levelContainers)
-    
 end
 
 function ManagerCacheBase.updateVersion(self, value)

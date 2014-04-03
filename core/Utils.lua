@@ -2,13 +2,53 @@ require('sdk.core.ELuaType')
 
 local lfs = require 'lfs'
 
-
 --
 --internal functions
 --
 
+----------------------------------------------------------------------------------
+-- doesFileExist
+--
+-- Checks to see if a file exists in the path.
+--
+-- Enter:   name = file name
+--  path = path to file (directory)
+--  defaults to ResourceDirectory if "path" is missing.
+--
+-- Returns: true = file exists, false = file not found
+----------------------------------------------------------------------------------
+--
+--function doesFileExist( fname, path )
+--
+--    local results = false
+--
+--    local filePath = system.pathForFile( fname, path )
+--
+--    -- filePath will be nil if file doesn't exist and the path is ResourceDirectory
+--    --
+--    if filePath then
+--        filePath = io.open( filePath, "r" )
+--    end
+--
+--    if  filePath then
+--        print( "File found -> " .. fname )
+--        -- Clean up our file handles
+--        filePath:close()
+--        results = true
+--    else
+--        print( "File does not exist -> " .. fname )
+--    end
+--
+--    print()
+--
+--    return results
+--end
+
 local function isFileExistsInternal(path)
     local result = false
+    
+    print('isFileExistsInternal')
+    print(path)
     
     --todo: change open to get attributes
     
@@ -47,7 +87,10 @@ local function removeDirectoryInternal(path)
         return true
     end
     
-    assert(getIsDirectoryInternal(path))
+    --todo: review
+    if(system.getInfo("platformName") ~= 'Android')then
+        assert(getIsDirectoryInternal(path))
+    end 
     
     local result = true
     
@@ -189,12 +232,15 @@ function isFileExists(fileName, baseDir)
     local result = false
     
     if(baseDir == nil)then
+        print('remove it. baseDir == nil')
         baseDir = system.ResourceDirectory
     end
     
     local filePath = system.pathForFile(fileName, baseDir)
     
     if(filePath ~= nil)then
+        print('remove it. filePath = '..filePath)
+
         result = isFileExistsInternal(filePath)
     else
         print(string.format("Not found file : %s", fileName), ELogLevel.ELL_WARNING)
@@ -334,14 +380,15 @@ function removeDirectory(fileName, baseDir)
         return true
     end
     
-    assert(getIsDirectory(fileName, baseDir))
+    --todo: review
+    if(system.getInfo("platformName") ~= 'Android')then
+        assert(getIsDirectory(fileName, baseDir))
+    end
     
     local result =  removeDirectoryInternal(system.pathForFile(fileName, baseDir))
     
     return result
 end
-
-
 
 function getClone(data)
     assert(data ~= nil)
