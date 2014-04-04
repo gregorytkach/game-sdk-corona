@@ -17,35 +17,33 @@ local lfs = require 'lfs'
 -- Methods
 --
 
+function Utils.isSimulator()
+    return "simulator" == system.getInfo("environment")
+end
+
+
 function Utils.getPlatformType()
     local result = system.getInfo("platformName")
     
---    if( systemName == 'Mac OS X'  or
---        systemName == 'iPhone OS')then
---        
---        result = EPlatformType.EPT_UNIX
---        
---    elseif( systemName == 'Win' or 
---            systemName == 'Android')then
---        
---        result = EPlatformType.EPT_WIN
---        
---    else
-----        local path = system.pathForFile('', system.ResourceDirectory)
-----        
-----        local directoryHandler = io.open(path)
-----        
-----        if(directoryHandler == nil)then
-----            result = EPlatformType.EPT_WIN
-----        else
-----            directoryHandler:close()
-----            result = EPlatformType.EPT_UNIX
-----        end 
---    end
-        
     return result
 end
 
+
+--
+-- io
+--
+
+local notReadableExtentionsAndroid = 
+        {
+            'html', 
+            'htm', 
+            '3gp', 
+            'm4v', 
+            'mp4', 
+            'png', 
+            'jpg',  
+            'rtf'
+        }
 
 --check is file exists
 --WARNING: do not use for check directory. For windows it not works properly
@@ -62,6 +60,25 @@ function Utils.isFileExists(fileName, baseDir)
     end
     
     local filePath = system.pathForFile(fileName, baseDir)
+    
+    if(application.platform_type == EPlatformType.EPT_ANDROID) then
+        
+        local fileExtension = getFileExtension(fileName)
+        
+        if(table.indexOf(notReadableExtentionsAndroid, fileExtension) ~= nil)then
+            --need fix file path
+            local fileNameWithoutExtension = getFilenameWithoutExtention(fileName)
+            
+            filePath = system.pathForFile(fileNameWithoutExtension, baseDir)
+            
+            print('File path')
+            print(filePath)
+            
+            filePath = filePath..'.'..fileExtension
+            
+        end
+        
+    end
     
     print('try find:')
     print(filePath)
@@ -171,13 +188,6 @@ function Utils.getAllFilesInDirectory(dirName, baseDir)
 end
 
 --
---internal functions
---
-
-
-
-
---
 --public functions
 --
 
@@ -204,10 +214,6 @@ function getString(data)
     end
     
     return result
-end
-
-function isSimulator()
-    return "simulator" == system.getInfo("environment")
 end
 
 --- Removes all references to a module.
@@ -254,20 +260,31 @@ function unrequire(m)
 end
 
 
-
-
-
 function getFileExtension(filePath)
     local _, _, fileExtension  = string.match(filePath, "(.-)([^\\/]-%.?([^%.\\/]*))$")
     
     return fileExtension
 end
 
+function getFilenameWithoutExtention(filePath)
+    local result = nil
+    
+    local fileExtension = getFileExtension(filePath)
+    
+    result  = string.gsub(filePath, "."..fileExtension, "")
+    
+    return result
+end
+
+
+
 function getFileName(filePath)
     local _, fileName, _  = string.match(filePath, "(.-)([^\\/]-%.?([^%.\\/]*))$")
     
     return fileName
 end
+
+
 
 
 function getFilePath(filePath)
@@ -326,3 +343,42 @@ function getClone(data)
     
     return result
 end
+
+--todo: review
+function vardump(value, depth, key)
+    local linePrefix = ""
+    local spaces = ""
+    
+    if key ~= nil then
+        linePrefix = "["..key.."] = "
+    end
+    
+    if depth == nil then
+        depth = 0
+    else
+        depth = depth + 1
+        for i=1, depth do spaces = spaces .. "  " end
+    end
+    
+    if type(value) == 'table' then
+        mTable = getmetatable(value)
+        if mTable == nil then
+            print(spaces ..linePrefix.."(table) ")
+        else
+            print(spaces .."(metatable) ")
+            value = mTable
+        end
+        for tableKey, tableValue in pairs(value) do
+            vardump(tableValue, depth, tableKey)
+        end
+    elseif  type(value)         == 'function'   or
+        type(value)         == 'thread'     or
+        type(value)         == 'userdata'   or
+        value               == nil
+	then
+        print(spaces..tostring(value))
+    else
+        print(spaces..linePrefix.."("..type(value)..") "..tostring(value))
+    end
+end
+

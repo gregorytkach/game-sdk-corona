@@ -6,6 +6,9 @@ require('sdk.core.JSONHelper')
 require('sdk.controllers.EControllerUpdateBase')
 
 require('sdk.models.ad.ManagerAdBase')
+require('sdk.models.ad.vungle.ManagerAdVungle')
+require('sdk.models.ad.chartboost.ManagerAdChartboost')
+
 require("sdk.models.states.ManagerStatesBase")
 require("sdk.models.levels.ManagerLevelsBase")
 require("sdk.models.purchases.ManagerPurchasesBase")
@@ -50,158 +53,23 @@ function GameInfoBase.initGameInfo(class)
         system.setGyroscopeInterval    (10)		-- INCREASE BATTERY LIFE
         system.setIdleTimer( false )                    -- DISABLE AUTOMATIC SCREEN DIMMING
         
-        GameInfoBase.initSystemInfo()
-        GameInfoBase.initAppConstants()
-        GameInfoBase.initMargins()
+        class.initSystemInfo()
+        class.initAppConstants()
+        class.initMargins()
     end
     
     _instance = class:new()
     _instance:onInitComplete()
 end
 
-
---
--- Properties
---
-
-function GameInfoBase.needManageMemory(self)
-    return false
-end
-
-function GameInfoBase.managerGame(self)
-    return self._managerGame
-end
-
-function GameInfoBase.managerResources(self)
-    return self._managerResources
-end
-
-function GameInfoBase.managerFonts(self)
-    return self._managerFonts
-end
-
-function GameInfoBase.managerParticles(self)
-    return self._managerParticles
-end
-
-function GameInfoBase.managerSounds(self)
-    return self._managerSounds
-end
-
-function GameInfoBase.managerStates(self)
-    return self._managerStates
-end
-
-function GameInfoBase.managerString(self)
-    return self._managerString
-end
-
-function GameInfoBase.managerPurchases(self)
-    return self._managerPurchases
-end
-
-function GameInfoBase.managerBonus(self)
-    return self._managerBonus
-end
-
-function GameInfoBase.managerBonusEnergy(self)
-    return self._managerBonusEnergy
-end
-
-function GameInfoBase.managerPlayers(self)
-    return self._managerPlayers
-end
-
-function GameInfoBase.managerLevels(self)
-    return self._managerLevels
-end
-
-function GameInfoBase.managerRemote(self)
-    return self._managerRemote
-end
-
-function GameInfoBase.managerCache(self)
-    return self._managerCache
-end
-
-function GameInfoBase.managerAd(self)
-    return self._managerAd
-end
-
-function GameInfoBase:instance(self)
-    return _instance
-end
-
-
-
-
-
-
---
---Events
---
-
-function GameInfoBase.system(self, event )
-    
-    print( "System event name and type: " .. event.name, event.type )
-    
-end
-
-function GameInfoBase.onGameStart(self, value)
-    assert(value ~= nil)
-    assert(self._managerGame == nil, 'Game already started')
-    
-    self._managerGame = value
-end
-
-function GameInfoBase.onGameEnd(self)
-    assert(self._managerGame ~= nil)
-    
-    self._managerGame:cleanup()
-    self._managerGame = nil
-end
-
-function GameInfoBase.onGameStartComplete(self, response)
-    
-end
-
---
---Methods
---
-
-function GameInfoBase.init(self)
-    assert(_instance == nil, "GameInfoBase is Singleton. Please use GameInfoBase.instance instead GameInfoBase.new")
-    _instance = self
-    
-    self:initManagers()
-    self:loadFonts()
-    self:registerStates()
-end
-
-function GameInfoBase.initManagers(self)
-    
-end
-
-function GameInfoBase.onInitComplete(self)
-    if(self._managerRemote ~= nil)then
-        self._managerRemote:update(ERemoteUpdateTypeBase.ERUT_GAME_START, nil, 
-        function(response) 
-            self:onGameStartComplete(response) 
-        end)
-    else
-        self:onGameStartComplete() 
-    end
-end
-
-function GameInfoBase.registerStates(self)
-    self._managerStates:registerState(EStateTypeBase.EST_EMPTY,     "sdk.states.empty.StateEmptyCreator")
-end
-
-function GameInfoBase.loadFonts(self)
-end
-
 function GameInfoBase.initSystemInfo(self)
-    application.device_id = system.getInfo("deviceID")
+    application.platform_type   = system.getInfo("platformName")
+    
+    print('Run on '..application.platform_type)
+    
+    application.device_id       = system.getInfo("deviceID")
+    
+    print('device id: '..application.device_id)
 end
 
 function GameInfoBase.initAppConstants(self)
@@ -270,6 +138,148 @@ function GameInfoBase.initMargins()
     application.margin_left               = display.screenOriginX
     application.margin_right              = display.contentWidth - display.screenOriginX 
 end
+
+
+--
+-- Properties
+--
+
+function GameInfoBase.needManageMemory(self)
+    return false
+end
+
+function GameInfoBase.managerGame(self)
+    return self._managerGame
+end
+
+function GameInfoBase.managerResources(self)
+    return self._managerResources
+end
+
+function GameInfoBase.managerFonts(self)
+    return self._managerFonts
+end
+
+function GameInfoBase.managerParticles(self)
+    return self._managerParticles
+end
+
+function GameInfoBase.managerSounds(self)
+    return self._managerSounds
+end
+
+function GameInfoBase.managerStates(self)
+    return self._managerStates
+end
+
+function GameInfoBase.managerString(self)
+    return self._managerString
+end
+
+function GameInfoBase.managerPurchases(self)
+    return self._managerPurchases
+end
+
+function GameInfoBase.managerBonus(self)
+    return self._managerBonus
+end
+
+function GameInfoBase.managerBonusEnergy(self)
+    return self._managerBonusEnergy
+end
+
+function GameInfoBase.managerPlayers(self)
+    return self._managerPlayers
+end
+
+function GameInfoBase.managerLevels(self)
+    return self._managerLevels
+end
+
+function GameInfoBase.managerRemote(self)
+    return self._managerRemote
+end
+
+function GameInfoBase.managerCache(self)
+    return self._managerCache
+end
+
+function GameInfoBase.managerAdChartboost(self)
+    return self._managerAdChartboost
+end
+
+function GameInfoBase.managerAdVungle(self)
+    return self._managerAdVungle
+end
+
+function GameInfoBase:instance(self)
+    return _instance
+end
+
+--
+--Events
+--
+
+function GameInfoBase.system(self, event )
+    
+    print( "System event name and type: " .. event.name, event.type )
+    
+end
+
+function GameInfoBase.onGameStart(self, value)
+    assert(value ~= nil)
+    assert(self._managerGame == nil, 'Game already started')
+    
+    self._managerGame = value
+end
+
+function GameInfoBase.onGameEnd(self)
+    assert(self._managerGame ~= nil)
+    
+    self._managerGame:cleanup()
+    self._managerGame = nil
+end
+
+function GameInfoBase.onGameStartComplete(self, response)
+    
+end
+
+--
+--Methods
+--
+
+function GameInfoBase.init(self)
+    assert(_instance == nil, "GameInfoBase is Singleton. Please use GameInfoBase.instance instead GameInfoBase.new")
+    _instance = self
+    
+    self:initManagers()
+    self:loadFonts()
+    self:registerStates()
+end
+
+function GameInfoBase.initManagers(self)
+    
+end
+
+function GameInfoBase.onInitComplete(self)
+    if(self._managerRemote ~= nil)then
+        self._managerRemote:update(ERemoteUpdateTypeBase.ERUT_GAME_START, nil, 
+        function(response) 
+            self:onGameStartComplete(response) 
+        end)
+    else
+        self:onGameStartComplete() 
+    end
+end
+
+function GameInfoBase.registerStates(self)
+    self._managerStates:registerState(EStateTypeBase.EST_EMPTY,     "sdk.states.empty.StateEmptyCreator")
+end
+
+function GameInfoBase.loadFonts(self)
+end
+
+
 
 
 
