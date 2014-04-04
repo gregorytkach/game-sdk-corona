@@ -101,13 +101,10 @@ function ManagerResourcesBase._getAnimation(self, resourceType, param, scale)
         sheetImage = string.format(self._resources[resourceType], application.dir_assets, param, application.scaleSuffix)
     end
     
-    --todo: impelement
---    if(application.platform_type ~= EPlatformType.EPT_ANDROID)then
-        assert(Utils.isFileExists(sheetImage))
---    end
+    assert(Utils.isFileExists(sheetImage))
     
     local pathWithoutExtention        = getFilenameWithoutExtention(sheetImage)
-        
+    
     local sheetInfoPath = string.gsub(pathWithoutExtention, '/', '.' )
     
     local animationSheetInfo = require(sheetInfoPath)

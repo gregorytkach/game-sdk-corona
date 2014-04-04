@@ -158,10 +158,8 @@ function ViewButton.init(self, params)
     local imageNameUp = string.format(params.image,     'up')
     local imageNameDown = string.format(params.image,   'down')
     
-    if(application.platform_type ~= EPlatformType.EPT_ANDROID)then
-        assert(Utils.isFileExists(imageNameUp),     string.format('Not found button image up: %s', imageNameUp))
-        assert(Utils.isFileExists(imageNameDown),   string.format('Not found button image down: %s', imageNameDown))
-    end
+    assert(Utils.isFileExists(imageNameUp),     string.format('Not found button image up: %s', imageNameUp))
+    assert(Utils.isFileExists(imageNameDown),   string.format('Not found button image down: %s', imageNameDown))
     
     local widget = require("widget")
     
