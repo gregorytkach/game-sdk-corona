@@ -65,7 +65,7 @@ function Utils.isFileExists(fileName, baseDir)
         
         local fileExtension = getFileExtension(fileName)
         
-        if(table.indexOf(notReadableExtentionsAndroid, fileExtension) ~= nil and baseDir == system.ResourcesDirectory)then
+        if(table.indexOf(notReadableExtentionsAndroid, fileExtension) ~= nil and baseDir == system.ResourceDirectory)then
             --android not found this file
             --returns true for avoid asertion
             result = true
