@@ -65,26 +65,14 @@ function Utils.isFileExists(fileName, baseDir)
         
         local fileExtension = getFileExtension(fileName)
         
-        if(table.indexOf(notReadableExtentionsAndroid, fileExtension) ~= nil)then
-            --need fix file path
-            local fileNameWithoutExtension = getFilenameWithoutExtention(fileName)
-            
-            filePath = system.pathForFile(fileNameWithoutExtension, baseDir)
-            
-            print('File path')
-            print(filePath)
-            
-            filePath = filePath..'.'..fileExtension
-            
+        if(table.indexOf(notReadableExtentionsAndroid, fileExtension) ~= nil and baseDir == system.ResourcesDirectory)then
+            --android not found this file
+            --returns true for avoid asertion
+            result = true
         end
-        
     end
     
-    print('try find:')
-    print(filePath)
-    
-    if(filePath ~= nil)then
-        
+    if(not result and filePath ~= nil)then
         local mode =    lfs.attributes(filePath, "mode")
         result = mode ~= nil
     end

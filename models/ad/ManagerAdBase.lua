@@ -1,5 +1,3 @@
-require('sdk.core.object')
-
 ManagerAdBase = classWithSuper(Object, 'ManagerAdBase')
 
 
@@ -27,5 +25,3 @@ end
 function ManagerAdBase.cleanup(self)
     Object.cleanup(self)
 end
-
-
