@@ -35,11 +35,6 @@ end
 function LevelInfoBase.deserialize(self, data)
     SerializableObject.deserialize(self, data)
     
-    if(data.number == nil)then
-        print('Not found number for level info base. Use by default 1. TODO: remove it after implement on server side', ELogLevel.ELL_WARNING)
-        data.number = 1
-    end
-    
     assert(data.progress                ~= nil)
     
     self._rewardCurrencySoft    = tonumber(assertProperty(data, 'reward_currency_soft'))

@@ -9,7 +9,7 @@ function ViewSprite.init(self, params)
     
     assert(params.image ~= nil)
     
-    assert(Utils.isFileExists(params.image), string.format('Not found image: %s', params.image))
+    assert(Utils.isFileExists(params.image, system.ResourceDirectory), string.format('Not found image: %s', params.image))
     
     if(params.scale == nil)then
         params.scale = self:getDefaultScale()

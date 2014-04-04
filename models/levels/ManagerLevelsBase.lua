@@ -19,7 +19,7 @@ end
 function ManagerLevelsBase.firstIncompleteLevel(self)
     local result
     
-    for i, levelContainer in ipairs(self._levelContainers)do
+    for _, levelContainer in ipairs(self._levelContainers)do
         
         if(levelContainer:isOpen())then
             result = levelContainer:firstIncompleteLevel()
@@ -34,6 +34,24 @@ function ManagerLevelsBase.firstIncompleteLevel(self)
     return result
 end
 
+
+function ManagerLevelsBase.completeLevelsCount(self)
+    local result = 0
+    
+    for _, levelContainer in ipairs(self._levelContainers)do
+        
+        for _, level in ipairs(levelContainer:levels())do
+            
+            if(level:progress():isComplete())then
+                result = result + 1
+            end
+            
+        end
+        
+    end 
+    
+    return result
+end
 
 
 --

@@ -55,7 +55,7 @@ function Utils.isFileExists(fileName, baseDir)
     local result = false
     
     if(baseDir == nil)then
-        print('Utils:isFileExists. base dir not specified. Use resource dir by default')
+        print('Utils:isFileExists. base dir not specified. Use resource dir by default', ELogLevel.ELL_WARNING)
         baseDir = system.ResourceDirectory
     end
     

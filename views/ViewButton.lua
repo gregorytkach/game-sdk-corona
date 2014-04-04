@@ -158,8 +158,8 @@ function ViewButton.init(self, params)
     local imageNameUp = string.format(params.image,     'up')
     local imageNameDown = string.format(params.image,   'down')
     
-    assert(Utils.isFileExists(imageNameUp),     string.format('Not found button image up: %s', imageNameUp))
-    assert(Utils.isFileExists(imageNameDown),   string.format('Not found button image down: %s', imageNameDown))
+    assert(Utils.isFileExists(imageNameUp,   system.ResourceDirectory),   string.format('Not found button image up: %s', imageNameUp))
+    assert(Utils.isFileExists(imageNameDown, system.ResourceDirectory),   string.format('Not found button image down: %s', imageNameDown))
     
     local widget = require("widget")
     
