@@ -25,7 +25,7 @@ local function debugAssert(condition, message)
     end
 end
 
-local function debugPring(message, level)
+local function debugPrint(message, level)
     
     level = level or ELogLevel.ELL_INFO
     
@@ -86,7 +86,7 @@ assertProperty = nil
 
 if(application.debug)then
     
-    print           = debugPring
+    print           = debugPrint
     assert          = debugAssert
     assertProperty  = debugAssertProperty
     

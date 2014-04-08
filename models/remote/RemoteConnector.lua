@@ -39,14 +39,7 @@ function RemoteConnector.update(self, updateType, data, callback, methodType, co
     end
     
     
-    local controller = nil
-    
-    if(updateType == ERemoteUpdateTypeBase.ERUT_GAME_START)then
-        controller = "game/init"
-        
-    else
-        assert(false)
-    end
+    local controller = self:getController(updateType)
     
     local headers = 
     {
@@ -77,7 +70,6 @@ function RemoteConnector.update(self, updateType, data, callback, methodType, co
         sink    = ltn12.sink.table(responseString)
     }
     
-    
     local responseData = self._json.decode(responseString[1])
     
     local response = Response:new()
@@ -96,6 +88,19 @@ function RemoteConnector.update(self, updateType, data, callback, methodType, co
         callback(response) 
     end
     
+end
+
+function RemoteConnector.getController(self, type)
+    local result = ''
+    
+    if(type == ERemoteUpdateTypeBase.ERUT_GAME_START)then
+        result = "game/init"
+        
+    else
+        assert(false)
+    end
+    
+    return result
 end
 
 function RemoteConnector.getParams(self, data, headerType)

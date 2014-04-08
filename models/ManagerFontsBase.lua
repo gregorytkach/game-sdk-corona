@@ -38,7 +38,7 @@ end
 function ManagerFontsBase.loadFont(self, fontType, fontPath, fontImage, fontSize)
     assert(self._loadedFonts[fontType] == nil, 'font already loaded')
     
-    assert(Utils.isFileExists(fontPath, system.ResourceDirectory))
+    assert(Utils.isFileExists(fontPath,  system.ResourceDirectory))
     
     assert(Utils.isFileExists(fontImage, system.ResourceDirectory))
     
