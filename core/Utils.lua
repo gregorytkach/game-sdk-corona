@@ -187,7 +187,8 @@ function getString(data)
     if( dataType == ELuaType.ELT_NUMBER  or 
         dataType == ELuaType.ELT_STRING  or 
         dataType == ELuaType.ELT_BOOLEAN or
-        dataType == ELuaType.ELT_NIL)then
+        dataType == ELuaType.ELT_NIL     or
+        dataType == ELuaType.ELT_FUNCTION)then
         
         result = tostring(data)
         
