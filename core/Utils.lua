@@ -78,7 +78,7 @@ function Utils.isFileExists(fileName, baseDir)
     end
     
     if(not result)then
-        print(string.format("Not found file : %s", filePath), ELogLevel.ELL_WARNING)
+        print(string.format("Not found file : %s", tostring(filePath)), ELogLevel.ELL_WARNING)
     end
     
     return result
