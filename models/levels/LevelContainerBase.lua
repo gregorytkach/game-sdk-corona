@@ -100,5 +100,7 @@ function LevelContainerBase.deserialize(self, data)
         table.insert(self._levels, level)
     end
     
+    UtilsArray.sortQuick(self._levels, "_number")
+    
 end
 

@@ -34,9 +34,21 @@ function ManagerCacheBase.getDataBonusEnergy(self)
     assert(false, 'Please override')
 end
 
+function ManagerCacheBase.getDataTutorial(self)
+    assert(false, 'Please override')
+end
+
 --
 -- Paths
 -- 
+
+function ManagerCacheBase.fileNameTutorial(self)
+    return 'tutorial.json'
+end
+
+function ManagerCacheBase.directoryTutorial(self)
+    return application.dir_data..'tutorial'
+end
 
 function ManagerCacheBase.directoryPlayers(self)
     return application.dir_data..'players'
@@ -150,16 +162,26 @@ function ManagerCacheBase.updateLocalData(self, data)
     assert(data.levels      ~= nil)
     assert(data.purchases   ~= nil)
     
-    
-    self:updatePlayers(data.players)
+    --todo: review and make update players if need
+--    self:updatePlayers(data.players)
     self:updateLevels(data.levels)
     self:updatePurchases(data.purchases)
+    self:updateTutorial(data.tutorial)
     --    self:updateBonus(data)
     --    self:updateBonusEnergy(data)
     
     --todo: update bonus data
     
     self:updateVersion(data.version)
+end
+
+function ManagerCacheBase.updateTutorial(self, data)
+    assert(data.tutorial ~= nil)
+    
+    --try remove old data
+    Utils.removeDirectoryOrFile(self:directoryTutorial(), system.DocumentsDirectory)
+    
+    self:savetutorial(data.tutorial)
 end
 
 function ManagerCacheBase.updatePlayers(self, data)
@@ -254,6 +276,12 @@ function ManagerCacheBase.onGameStart(self, type, callback)
     local dataBonusEnergy       = self:getOrCreateBonusEnergy()
     response.bonus_energy       = dataBonusEnergy
     
+    --
+    --tutorial
+    --
+    local dataTutorial          = self:getOrCreateTutorial()
+    response.tutorial           = dataTutorial
+    
     resultData.response = response
     
     local result                = Response:new()
@@ -261,6 +289,26 @@ function ManagerCacheBase.onGameStart(self, type, callback)
     
     callback(result)
     
+end
+
+
+function ManagerCacheBase.getOrCreateTutorial(self)
+    local result = nil
+    
+    local fileName = string.format('%s/%s', self:directoryTutorial() ,self:fileNameTutorial())
+    
+    result = JSONHelper.getDataFrom(fileName, system.DocumentsDirectory)
+    
+    if(result == nil)then
+        local data = self:getDataTutorial()
+        
+        JSONHelper.saveDataTo(data, fileName)
+        
+        --todo: remove
+        result = self:getOrCreateTutorial()
+    end
+    
+    return result
 end
 
 function ManagerCacheBase.getOrCreateBonus(self)
@@ -438,6 +486,18 @@ function ManagerCacheBase.tryLoadLevelContainerData(self, dirContainer)
     end
     
     return result
+end
+
+--
+-- saving to disk
+--
+
+function ManagerCacheBase.saveTutorial(self, data)
+    assert(data ~= nil)
+    
+    local fileName = string.format('%s/%s', self:directoryTutorial(), self:fileNameTutorial())
+    
+    JSONHelper.saveDataTo(data, fileName)
 end
 
 function ManagerCacheBase.savePurchases(self, data)

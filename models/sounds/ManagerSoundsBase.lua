@@ -23,9 +23,23 @@ function ManagerSoundsBase.system(self, event )
     
 end
 
---function ManagerSoundsBase.onStateChanged(self, stateType)
---    
---end
+function ManagerSoundsBase.onStateChanged(self, stateType)
+    if(self._prevStateType == stateType)then
+        return
+    end
+    
+    self._prevStateType = stateType
+    
+    self:stopMusic()
+    
+    self:unloadSounds()
+    
+    self:loadSounds(stateType)
+    
+    if(application.music)then
+        self:playMusic(stateType)
+    end
+end
 
 --
 --Methods
@@ -53,36 +67,56 @@ function ManagerSoundsBase.unloadSounds(self)
     
 end
 
-function ManagerSoundsBase.playMusic(self, stateType)
+function ManagerSoundsBase.loadSounds(self, stateType)
     
-    local audioName = self:getMusicForState(stateType)
-    
-    local musicHandle = audio.loadStream(audioName)
-    
-    local playMusicParams = 
-    {
-        channel =   musicHandle,
-        loops   =   -1,
-        fadein  =   application.animation_duration
-    }
-    
-    audio.play(musicHandle, playMusicParams)
-    
-    local a = audio.setVolume(1, 
-    { 
-        channel = musicHandle  
-    })
-    
-    audio.setMinVolume(1, 
-    { 
-        channel = musicHandle  
-    })
-    
-    self._audioHandlers[ESoundTypeBase.ESTB_MUSIC] = musicHandle
 end
 
 
-function ManagerSoundsBase.stopMusic(self, soundName)
+function ManagerSoundsBase.playMusic(self, stateType)
+    
+    if(stateType == nil)then
+        local currentState = GameInfoBase:instance():managerStates():currentState()
+        
+        if(currentState ~= nil)then
+            stateType = currentState:getType()
+        end
+        
+    end
+    
+    if(stateType ~= nil)then
+        
+        local audioName = self:getMusicForState(stateType)
+        
+        local musicHandle = audio.loadStream(audioName)
+        
+        local playMusicParams = 
+        {
+            channel =   musicHandle,
+            loops   =   -1,
+            fadein  =   application.animation_duration
+        }
+        
+        audio.play(musicHandle, playMusicParams)
+        
+        local paramsVolume = 
+        { 
+            channel = musicHandle  
+        }
+        
+        local volume = 0.1
+        
+        print(audio.setVolume(volume, paramsVolume))
+        print(audio.setMinVolume(volume, paramsVolume))
+        print(audio.setMaxVolume(volume, paramsVolume))
+        
+       
+        self._audioHandlers[ESoundTypeBase.ESTB_MUSIC] = musicHandle
+    end
+end
+
+
+
+function ManagerSoundsBase.stopMusic(self)
     
     local musicHandle = self._audioHandlers[ESoundTypeBase.ESTB_MUSIC]
     
@@ -113,7 +147,9 @@ function ManagerSoundsBase.getSound(self, soundType)
     
     result = self._audioHandlers[soundType]
     
-    assert(result ~= nil, 'Not found audio handler for '..soundType)
+    if(result == nil)then
+        print('Not found audio handler for '..tostring(soundType), ELogLevel.ELL_WARNING)
+    end
     
     return result
 end

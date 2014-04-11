@@ -20,9 +20,9 @@ end
 --
 
 function ManagerPurchasesBase.onTryPurchase(self, purchaseItem)
-     assert(purchaseItem ~= nil)
-     
-     
+    assert(purchaseItem ~= nil)
+    
+    
 end
 
 --
@@ -34,6 +34,32 @@ function ManagerPurchasesBase.init(self)
     SerializableObject.init(self)
 end
 
+function ManagerPurchasesBase.getPurchases(self, type)
+    local result = {}
+    
+    for _, purchase in ipairs(self._purchases)do
+        if(purchase:type() == type)then
+            table.insert(result, purchase)
+        end
+    end
+    
+    return result
+end
+
+function ManagerPurchasesBase.getPurchaseFirst(self, type)
+    local result = nil
+    
+    for _, purchase in ipairs(self._purchases)do
+        if(purchase:type() == type)then
+            result = purchase
+            break
+        end
+    end
+    
+    assert(result ~= nil, 'Not found purchase with type: '..tostring(type))
+    
+    return result
+end
 
 function ManagerPurchasesBase.deserialize(self, data)
     SerializableObject.deserialize(self, data)

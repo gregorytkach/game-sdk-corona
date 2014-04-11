@@ -47,7 +47,7 @@ function ViewLabel.init(self, params)
     
     local fontSize = GameInfoBase:instance():managerFonts():getFontSize(params.fontType)
     
-    local lineSpacing = (fontSize / 4)
+    local lineSpacing = params.lineSpacing or (fontSize / 4)
     
     self._sourceView = textProvider.CreateText(
     {

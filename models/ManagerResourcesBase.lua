@@ -101,7 +101,7 @@ function ManagerResourcesBase._getAnimation(self, resourceType, param, scale)
         sheetImage = string.format(self._resources[resourceType], application.dir_assets, param, application.scaleSuffix)
     end
     
-    assert(Utils.isFileExists(sheetImage))
+    assert(Utils.isFileExists(sheetImage, system.ResourceDirectory))
     
     local pathWithoutExtention        = getFilenameWithoutExtention(sheetImage)
     

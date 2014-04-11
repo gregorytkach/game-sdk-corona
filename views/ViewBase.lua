@@ -275,7 +275,7 @@ function ViewBase.createButton(self, image, params, text, fontType, align)
     return result
 end
 
-function ViewBase.createLabel(self, text, fontType, align, wrapWidth, value, timeUpdate)
+function ViewBase.createLabel(self, text, fontType, align, wrapWidth, value, timeUpdate, params)
     local result = nil
     
     local paramsLabel =
@@ -288,6 +288,24 @@ function ViewBase.createLabel(self, text, fontType, align, wrapWidth, value, tim
         timeUpdate  = timeUpdate,
         wrapWidth   = wrapWidth
     }
+    
+    if(wrapWidth ~= nil)then
+        print("wrapWidth is obsolete. Please use params table", ELogLevel.ELL_WARNING)
+    end
+    
+    if(value ~= nil)then
+        print("value is obsolete. Please use params table", ELogLevel.ELL_WARNING)
+    end
+    
+    if(timeUpdate ~= nil)then
+        print("value is obsolete. Please use params table", ELogLevel.ELL_WARNING)
+    end
+    
+    if(params ~= nil)then
+        for key, value in pairs(params)do
+            paramsLabel[key] = value
+        end
+    end
     
     result = ViewLabel:new(paramsLabel)
     self._sourceView:insert(result:sourceView())

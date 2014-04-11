@@ -1,6 +1,7 @@
 require('sdk.core.Object')
 require('sdk.core.SerializableObject')
 require('sdk.core.Utils')
+require('sdk.core.UtilsArray')
 require('sdk.core.JSONHelper')
 
 require('sdk.controllers.EControllerUpdateBase')
@@ -24,6 +25,7 @@ require("sdk.models.ManagerResourcesBase")
 require("sdk.models.remote.ManagerRemoteBase")
 require("sdk.models.remote.ManagerRemoteStub")
 require('sdk.models.cache.ManagerCacheBase')
+require('sdk.models.tutorial.ManagerTutorialBase')
 require('sdk.states.empty.StateEmpty')
 require('sdk.states.EStateTypeBase')
 
@@ -210,6 +212,10 @@ end
 
 function GameInfoBase.managerAdVungle(self)
     return self._managerAdVungle
+end
+
+function GameInfoBase.managerTutorial(self)
+    return self._managerTutorial
 end
 
 function GameInfoBase:instance(self)
