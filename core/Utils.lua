@@ -34,16 +34,16 @@ end
 --
 
 local notReadableExtentionsAndroid = 
-        {
-            'html', 
-            'htm', 
-            '3gp', 
-            'm4v', 
-            'mp4', 
-            'png', 
-            'jpg',  
-            'rtf'
-        }
+{
+    'html', 
+    'htm', 
+    '3gp', 
+    'm4v', 
+    'mp4', 
+    'png', 
+    'jpg',  
+    'rtf'
+}
 
 --check is file exists
 --WARNING: do not use for check directory. For windows it not works properly
@@ -178,8 +178,7 @@ end
 --
 --public functions
 --
-
-function getString(data)
+function getString(data, ignoreTables)
     local result = ""
     
     local dataType = type(data)
@@ -194,13 +193,21 @@ function getString(data)
         
     elseif(dataType == ELuaType.ELT_TABLE)then
         
-        for key, value in pairs(data)do
-            result = result..getString(key)..'='..getString(value)..'\n'
+        if(ignoreTables == nil)then
+            ignoreTables = {}
         end
         
+        if(table.indexOf(ignoreTables, data) == nil)then
+            table.insert(ignoreTables, data)
+            
+            for key, value in pairs(data)do
+                result = result..getString(key, ignoreTables)..'='..getString(value, ignoreTables)..'\n'
+            end
+        end
     else
         assert(false)
     end
+    
     
     return result
 end
