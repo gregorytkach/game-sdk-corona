@@ -117,8 +117,6 @@ function Utils.removeDirectoryOrFile(targetName, baseDir)
     
     if(Utils.getIsDirectory(targetName, baseDir))then
         
-        print(targetName..' is a directory')
-        
         --remove subfiles and subdirectories
         local filesInDir = Utils.getAllFilesInDirectory(targetName, baseDir)
         
@@ -141,10 +139,12 @@ function Utils.removeDirectoryOrFile(targetName, baseDir)
         
         result = resultOK ~= nil
         
-        if(result)then
-            print('File remove success\n'..path)
-        else
-            print('File remove error\n'..path..'\n'..errorMsg)
+        if(application.debug_io)then
+            if(result)then
+                print('File remove success\n'..path)
+            else
+                print('File remove error\n'..path..'\n'..errorMsg)
+            end
         end
     end
     
@@ -189,7 +189,7 @@ function getString(data, ignoreTables)
         dataType == ELuaType.ELT_NIL     or
         dataType == ELuaType.ELT_FUNCTION)then
         
-        result = tostring(data)
+        result = tostring(data)..' ('..dataType..')'
         
     elseif(dataType == ELuaType.ELT_TABLE)then
         
@@ -200,8 +200,9 @@ function getString(data, ignoreTables)
         if(table.indexOf(ignoreTables, data) == nil)then
             table.insert(ignoreTables, data)
             
+            result = result..'\n'..dataType..':\n'
             for key, value in pairs(data)do
-                result = result..getString(key, ignoreTables)..'='..getString(value, ignoreTables)..'\n'
+                result = result..getString(key, ignoreTables)..'\t\t=\t\t'..getString(value, ignoreTables)..',\n'
             end
         end
     else
@@ -314,7 +315,7 @@ function createParentDirectories(fileName, baseDir)
         local dirPath = system.pathForFile(currentFolder, baseDir)
         
         local isDirectoryCreate =  lfs.mkdir(dirPath)
-        if(isDirectoryCreate == true)then
+        if(isDirectoryCreate == true and application.debug_io)then
             print("Directory created\n"..dirPath)
         end
         

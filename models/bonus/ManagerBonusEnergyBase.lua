@@ -8,7 +8,13 @@ function ManagerBonusEnergyBase.needManageMemory(self)
     return false
 end
 
-function ManagerBonusEnergyBase.onBonusEnergyClaimed(self)
+
+function ManagerBonusEnergyBase.onBonusClaimed(self)
+--    self:timerStop()
+    
+--    self._timeLeft = self._timePeriod
+    
+--    self:timerStart()
 end
 
 function ManagerBonusEnergyBase.limit(self)
@@ -20,12 +26,12 @@ function ManagerBonusEnergyBase.onEnergyChanged(self)
     
     if(player:energy() < self._limit and self._timer == nil)then
         
-        self._timeLeftEnergy = self._timePeriodEnergy
+        self._timeLeft = self._timePeriod
         
-        self:timerEnergyStart()
+        self:timerStart()
         
     else
-        self._timeLeftEnergy = -1
+        self._timeLeft = -1
     end
 end
 
@@ -38,37 +44,25 @@ function ManagerBonusEnergyBase.init(self, bonusInfoClass)
     
 end
 
-function ManagerBonusEnergyBase.timerEnergyStop(self)
-    if(self._timerEnergy ~= nil)then
-        timer.cancel(self._timerEnergy)
-        self._timerEnergy = nil
-    end
-end
-
-function ManagerBonusEnergyBase.timerEnergyStart(self)
-    self._timerEnergy = timer.performWithDelay(application.animation_duration * 4,
+function ManagerBonusEnergyBase.timerStart(self)
+    self._timer = timer.performWithDelay(application.animation_duration * 4,
     function ()
-        self._timeLeftEnergy = self._timeLeftEnergy - 1
+        self._timeLeft = self._timeLeft - 1
         
-        if(self._timeLeftEnergy == 0)then
-            self:timerEnergyStop()
+        if(self._timeLeft == 0)then
+            self:timerStop()
             
-            local player =  GameInfo:instance():managerPlayers():playerCurrent()
+            local player =  GameInfoBase:instance():managerPlayers():playerCurrent()
             
             player:setEnergy(player:energy() + 1)
         end
     end, 
-    self._timeLeftEnergy)
+    self._timeLeft)
 end
 
 function ManagerBonusEnergyBase.deserialize(self, data)
     ManagerBonusBase.deserialize(self, data)
     
-    assert(data.limit           ~= nil)
-    
-    self._limit = tonumber(data.limit)
-    
-    --todo: review
---    self:timerEnergyStart()
+    self._limit         = tonumber(assertProperty(data, 'limit'))    
 end
 

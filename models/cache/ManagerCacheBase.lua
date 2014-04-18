@@ -109,8 +109,7 @@ function ManagerCacheBase.init(self)
     
     self._version = tonumber(versionData.value)
     
-    print('remove after debug')
-    print('use version 0')
+    print('remove after debug. use version 0')
     self._version = 0
 end
 

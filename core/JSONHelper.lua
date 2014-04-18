@@ -51,8 +51,8 @@ function JSONHelper.getDataFrom(fileName, baseDir)
             if(contents ~= nil)then
                 result = json.decode(contents)
                 
-                if(result ~= nil and application.debug)then
-                    print(string.format('Succefully load json data from file: %s', path))
+                if(result ~= nil and application.debug_io)then
+                    print(string.format('Succefully load json data from file \n%s', path))
                 end
             end
         end
@@ -100,7 +100,7 @@ function JSONHelper.saveDataTo(data, fileName, baseDir)
                 
                 io.close(fileHandler)
                 
-                if(application.debug)then
+                if(application.debug_io)then
                     print("Save data to file success \n"..path)
                 end
                 

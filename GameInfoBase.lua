@@ -105,11 +105,11 @@ function GameInfoBase.initAppConstants(self)
     
     local delimeterHeight = application.scaleFactorY / application.scaleFactorX
     application.scaleFillHeight = delimeterHeight / scaleDevice
-    print(string.format("Scale fill height\t\t %f", application.scaleFillHeight))
+    print(string.format("Scale fill height\t %f", application.scaleFillHeight))
     
     local delimeterWidth = application.scaleFactorX / application.scaleFactorY
     application.scaleFillWidth = 1 / (delimeterWidth) --/ scaleDevice)
-    print(string.format("Scale fill width\t\t %f", application.scaleFillWidth))
+    print(string.format("Scale fill width\t %f", application.scaleFillWidth))
     
     application.scaleMax = 1 / math.min(application.scaleFactorX, application.scaleFactorY)  
     print(string.format("Scale max\t\t %f", application.scaleMax))

@@ -80,7 +80,5 @@ function ManagerBonusBase.deserialize(self, data)
         
         table.insert(self._bonuses, bonus)
     end
-    
-    self:timerStart()
 end
 
