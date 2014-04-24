@@ -13,7 +13,7 @@ end
 
 function ManagerSoundsBase.system(self, event )
     
-    if (event.type == "applicationResume") then
+    if (event.type == ERuntimeSystemEvent.ERES_APP_RESUME) then
         
         if(application.music and self._musicHandle ~= nil)then
             audio.resume(self._musicHandle)

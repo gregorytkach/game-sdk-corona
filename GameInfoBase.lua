@@ -2,6 +2,7 @@ require('sdk.core.Object')
 require('sdk.core.SerializableObject')
 require('sdk.core.Utils')
 require('sdk.core.UtilsArray')
+require('sdk.core.UtilsTime')
 require('sdk.core.JSONHelper')
 
 require('sdk.controllers.EControllerUpdateBase')

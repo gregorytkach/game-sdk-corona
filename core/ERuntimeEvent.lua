@@ -5,3 +5,8 @@ ERuntimeEvent =
     ["ERE_SYSTEM"]      = "system";
 }
 
+ERuntimeSystemEvent = 
+{
+    ["ERES_APP_RESUME"] = "applicationResume";
+}
+

@@ -1,3 +1,5 @@
+require('sdk.core.Object')
+
 UtilsArray = classWithSuper(Object, 'UtilsArray')
 
 --

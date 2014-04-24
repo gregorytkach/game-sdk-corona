@@ -24,6 +24,15 @@ function PurchaseItemBase.priceHard(self)
     return self._priceHard
 end
 
+--need for set localized price
+function PurchaseItemBase.setPriceHard(self, value)
+    if(self._priceHard == value)then
+        return
+    end
+    
+    self._priceHard = value
+end
+
 function PurchaseItemBase.name(self)
     return self._name
 end
