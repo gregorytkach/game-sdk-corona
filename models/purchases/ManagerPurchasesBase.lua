@@ -180,29 +180,35 @@ function ManagerPurchasesBase.init(self)
     if self._store.availableStores.apple  then
         timer.performWithDelay(1000, 
         function() 
+            print('init apple store')
+            
             self._store.init( "apple", 
+            
             function(event)
                 self:onTransactionEvent()
             end) 
+            
+            self:updateHardPaymentsState()
         end)
         
     elseif self._store.availableStores.google then
         
         timer.performWithDelay( 1000,
         function()
-            print('init google')
+            print('init google store')
+            
             self._store.init( "google", 
             function(event)         
-                self:onTransactionEvent()
-            end);
+                self:onTransactionEvent()                
+            end)
             
-            --            self._store.restore();
-        end )
+            self:updateHardPaymentsState()
+        end)
     end
     
     self._callbacks = {}
     
-    
+    self:updateHardPaymentsState()
     --    self._store.availableStores     — used to see if a store is valid for your device.
     --    self._store.canLoadProducts     — check to see if loading products is allowed, which it’s not for Google Play.
     --    self._store.canMakePurchases    — parents can turn off purchasing for their kids.
