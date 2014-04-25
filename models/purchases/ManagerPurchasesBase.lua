@@ -51,7 +51,7 @@ function ManagerPurchasesBase.onTryPurchase(self, purchaseItem, onComplete, onEr
         print(3)
         print(purchaseItem:name())
         
-        self._store.purchase(purchaseItem:name())
+        self._store.purchase({purchaseItem:name()})
         
     elseif(onError ~= nil)then
         onError()
