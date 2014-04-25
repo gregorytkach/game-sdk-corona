@@ -28,11 +28,17 @@ function ManagerPurchasesBase.onTryPurchase(self, purchaseItem, onComplete, onEr
     print('can pay by hard: '..tostring(self._canPayByHard))
     
     if(playerCurrent:currencySoft() >= purchaseItem:priceSoft() and purchaseItem:priceSoft() > 0)then
+        print(1)
+        
         playerCurrent:setCurrencySoft(playerCurrent:currencySoft() - purchaseItem:priceSoft())
         
-        onComplete()
+        if(onComplete ~= nil)then
+            onComplete()
+        end
+        
     elseif(self._canPayByHard and purchaseItem:priceHard() > 0)then
         --try buy by hard currency
+        print(2)
         
         assert(self._callbacks[purchaseItem:name()] == nil, 'Previous purchase not handled')
         
@@ -41,6 +47,8 @@ function ManagerPurchasesBase.onTryPurchase(self, purchaseItem, onComplete, onEr
             on_complete = onComplete,
             on_error    = onError
         }
+        
+        print(3)
         
         self._store.purchase(purchaseItem:name())
         
