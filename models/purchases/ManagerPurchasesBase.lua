@@ -66,8 +66,12 @@ end
 
 function ManagerPurchasesBase.onPurchasesLoaded(self, event)
     
+    print('purchases loaded')
+    
     local products = event.products
     
+    print(products)
+
     for _, purchase in ipairs(#event.products) do
         print(purchase.title)              -- This is a string.
         print(purchase.description)        -- This is a string.
