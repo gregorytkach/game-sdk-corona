@@ -31,5 +31,4 @@ function UtilsArray.sortQuick(array, sortBy)
         
         array[indexJ + 1] = value
     end
-    
 end

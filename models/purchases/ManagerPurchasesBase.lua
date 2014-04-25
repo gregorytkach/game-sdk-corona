@@ -265,12 +265,18 @@ function ManagerPurchasesBase.deserialize(self, data)
         table.insert(purchasesIDs, purchaseItem:name())
     end
     
+    if(#self._purchases > 0)then
+        UtilsArray.sortQuick(self._purchases, "_contentCount")
+    end
+    
     if(self._canPayByHard)then
         self._store.loadProducts(purchasesIDs, 
         function(event)
             self:onPurchasesLoaded(event)
         end)
     end
+    
+    
 end
 
 
