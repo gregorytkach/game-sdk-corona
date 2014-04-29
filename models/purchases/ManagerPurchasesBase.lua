@@ -94,12 +94,11 @@ function ManagerPurchasesBase.onPurchasesLoaded(self, event)
     
 end
 
-function ManagerPurchasesBase.onTransactionEvent(self, event )
+function ManagerPurchasesBase.onTransactionEvent(self, event)
     if(event == nil)then
-        print("Purchase can't be completed -> event is nil", ELogLevel.ELL_WARNING)
+        print("Purchase can't be completed -> transaction event is nil", ELogLevel.ELL_ERROR)
         return
     end
-    
     
     print("onTransactionEvent")
     
