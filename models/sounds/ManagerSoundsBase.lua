@@ -103,7 +103,7 @@ function ManagerSoundsBase.playMusic(self, stateType)
             channel = musicHandle  
         }
         
-        local volume = 0.1
+        local volume = 0.7
         
         print(audio.setVolume(volume, paramsVolume))
         print(audio.setMinVolume(volume, paramsVolume))

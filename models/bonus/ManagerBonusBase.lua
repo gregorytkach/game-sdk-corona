@@ -65,15 +65,12 @@ end
 function ManagerBonusBase.deserialize(self, data)
     SerializableObject.deserialize(self, data)
     
-    assert(data.time_period  ~= nil)
-    assert(data.time_left    ~= nil)
+    self._timePeriod    = tonumber(assertProperty(data, 'time_period'))
+    self._timeLeft      = tonumber(assertProperty(data, 'time_left'))
     
-    assert(data.bonuses      ~= nil)
+    local bonusesData = assertProperty(data, 'bonuses')
     
-    self._timePeriod    = tonumber(data.time_period)
-    self._timeLeft      = tonumber(data.time_left)
-    
-    for i, bonusData in ipairs(data["bonuses"]) do
+    for i, bonusData in ipairs(bonusesData) do
         
         local bonus = self._bonusInfoClass:new()
         bonus:deserialize(bonusData)
