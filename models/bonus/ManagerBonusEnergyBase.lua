@@ -28,9 +28,6 @@ function ManagerBonusEnergyBase.onEnergyChanged(self)
         
         self._timeLeft = self._timePeriod
         
-        --todo: remove
-        self._timeLeft = 20
-        
         self:timerStart()
         
     else
@@ -68,8 +65,5 @@ function ManagerBonusEnergyBase.deserialize(self, data)
     ManagerBonusBase.deserialize(self, data)
     
     self._limit         = tonumber(assertProperty(data, 'limit'))   
-    
-      --todo: remove
-        self._timeLeft = 20
 end
 
