@@ -100,7 +100,7 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     
     print("onTransactionEvent")
     
-    print(event)
+--    print(event)
     
     local transaction   = event.transaction
     local tstate        = event.transaction.state
