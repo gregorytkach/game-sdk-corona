@@ -100,9 +100,7 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     
     print("onTransactionEvent")
     
-    for key, value in pairs(event) do
-        print(key..' = '..value)
-    end
+    print(event)
     
     local transaction   = event.transaction
     local tstate        = event.transaction.state

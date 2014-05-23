@@ -205,10 +205,12 @@ function getString(data, ignoreTables)
                 result = result..getString(key, ignoreTables)..'\t\t=\t\t'..getString(value, ignoreTables)..',\n'
             end
         end
+    elseif(dataType == ELuaType.ELT_USERDATA)then
+        --do nothing
+        result = result..' ('..dataType..')'
     else
         assert(false)
     end
-    
     
     return result
 end
