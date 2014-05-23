@@ -202,7 +202,7 @@ function ManagerPurchasesBase.init(self)
             self._store.init( "apple", 
             
             function(event)
-                self:onTransactionEvent()
+                self:onTransactionEvent(event)
             end) 
             
             self:updateHardPaymentsState()
@@ -216,7 +216,7 @@ function ManagerPurchasesBase.init(self)
             
             self._store.init( "google", 
             function(event)         
-                self:onTransactionEvent()                
+                self:onTransactionEvent(event)                
             end)
             
             self:updateHardPaymentsState()
