@@ -38,7 +38,6 @@ function ManagerPurchasesBase.onTryPurchase(self, purchaseItem, onComplete, onEr
         
     elseif(self._canPayByHard and purchaseItem:priceHard() > 0)then
         --try buy by hard currency
-        print(2)
         
         assert(self._callbacks[purchaseItem:name()] == nil, 'Previous purchase not handled')
         
@@ -48,7 +47,6 @@ function ManagerPurchasesBase.onTryPurchase(self, purchaseItem, onComplete, onEr
             on_error    = onError
         }
         
-        print(3)
         print(purchaseItem:name())
         
         self._store.purchase({purchaseItem:name()})
@@ -102,7 +100,9 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     
     print("onTransactionEvent")
     
-    print(event)
+    for key, value in pairs(event) do
+        print(key..' = '..value)
+    end
     
     local transaction   = event.transaction
     local tstate        = event.transaction.state
