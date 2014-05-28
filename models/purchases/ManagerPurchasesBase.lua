@@ -111,6 +111,8 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     
     local callbacks     = self._callbacks[transaction.productIdentifier]
     
+    self._callbacks[transaction.productIdentifier] = nil
+    
     local onComplete    = callbacks.on_complete
     local onError       = callbacks.on_error
     
