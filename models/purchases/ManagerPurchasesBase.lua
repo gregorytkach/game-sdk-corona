@@ -70,7 +70,7 @@ function ManagerPurchasesBase.onPurchasesLoaded(self, event)
     local products = event.products
     
     print(products)
-
+    
     for _, purchase in ipairs(#event.products) do
         print(purchase.title)              -- This is a string.
         print(purchase.description)        -- This is a string.
@@ -100,14 +100,14 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     
     print("onTransactionEvent")
     
---    print(event)
+    --    print(event)
     
     local transaction   = event.transaction
     local tstate        = event.transaction.state
     
-    print("receipt",                transaction.receipt)
-    print("transactionIdentifier",  transaction.identifier)
-    print("date",                   transaction.date)
+    print("receipt"..tostring(transaction.receipt))
+    print("transactionIdentifier"..tostring(transaction.identifier))
+    print("date"..tostring(transaction.date))
     
     local callbacks     = self._callbacks[transaction.productIdentifier]
     
@@ -127,7 +127,7 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
             print("map this purchase to a restore")
             
             tstate = EPurchaseState.EPS_RESTORED
-            print("I think tstate is ", tstate)
+            print("I think tstate is "..tostring(tstate))
             --            restoring = false
         end
     end
@@ -145,14 +145,14 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     elseif tstate == EPurchaseState.EPS_REFUNDED then
         print("User requested a refund -- locking app back")
         
-    elseif tstate == EPurchaseState.EPS_REVOKED then -- Amazon feature
-        print ("The user who has a revoked purchase is", transaction.userId)
+    elseif tstate == EPurchaseState.EPS_REVOKED then --Amazon feature
+        print ("The user who has a revoked purchase is "..tostring(transaction.userId))
         --Revoke this SKU here:
         
     elseif tstate == EPurchaseState.EPS_CANCELLED then
         print("User cancelled transaction")
     elseif tstate == EPurchaseState.EPS_FAILED then
-        print("Transaction failed, type: ", transaction.errorType, transaction.errorString)
+        print("Transaction failed, type: ".. tostring(transaction.errorType)..' '..tostring(transaction.errorString))
     else
         assert(false, "unknown purchase event: "..tostring(tstate))
     end
@@ -291,10 +291,4 @@ function ManagerPurchasesBase.deserialize(self, data)
         end)
     end
     
-    
 end
-
-
-
-
-
