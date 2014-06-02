@@ -65,8 +65,6 @@ end
 
 function ManagerPurchasesBase.onPurchasesLoaded(self, event)
     
-    print('purchases loaded')
-    
     local products = event.products
     
     for _, purchase in ipairs(products) do
@@ -89,6 +87,7 @@ function ManagerPurchasesBase.onPurchasesLoaded(self, event)
         end  
     end
     
+    self._productsLoaded = #products > 0
 end
 
 function ManagerPurchasesBase.onTransactionEvent(self, event)
@@ -279,7 +278,7 @@ function ManagerPurchasesBase.initStores(self, purchasesIDs)
         
         if(storeInitialized)then
             self:updateHardPaymentsState()
-            self:loadPurhcases(purchasesIDs)
+            self:loadPurchases(purchasesIDs)
         end
     end)
     
@@ -307,11 +306,26 @@ function ManagerPurchasesBase.initStoreGoogle(self)
     
 end
 
-function ManagerPurchasesBase.loadPurhcases(self, purchasesIDs)
-    if(self._canPayByHard)then
-        print('try load purchases. Purchases count: '..table.getn(purchasesIDs))
+function ManagerPurchasesBase.loadPurchases(self, purchasesIDs)
+    
+    if(self._productsLoaded or self._productsLoadingInProgress)then
+        return
+    end
+    
+    self._productsLoadingInProgress = true
+    
+    print('try load purchases. Purchases count: '..table.getn(purchasesIDs))
+    
+    print('can pay by hard: '..tostring(self._canPayByHard))
+    print('can load products: '..tostring(self._store.canLoadProducts))
+    
+    if(self._canPayByHard and self._store.canLoadProducts)then
         self._store.loadProducts(purchasesIDs, 
         function(event)
+            self._productsLoadingInProgress  = false
+            
+            print('purchases loaded')
+            
             self:onPurchasesLoaded(event)
         end)
     end
