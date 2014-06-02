@@ -187,9 +187,11 @@ function ManagerPurchasesBase.init(self)
     
     SerializableObject.init(self)
     
-    self._store = require( "store" )
+    self._productsLoaded    = false
+    self._callbacks         = {}
     
-    self._targetStore = self._store.target
+    self._store             = require( "store" )
+    self._targetStore       = self._store.target
     
     print('Target store is: '..tostring(self._targetStore))
     
@@ -204,12 +206,6 @@ function ManagerPurchasesBase.init(self)
         self:onRuntimeEvent(event) 
     end)
     
-    
-    
-    
-    self._callbacks = {}
-    
-    self:updateHardPaymentsState()
     --    self._store.availableStores     — used to see if a store is valid for your device.
     --    self._store.canLoadProducts     — check to see if loading products is allowed, which it’s not for Google Play.
     --    self._store.canMakePurchases    — parents can turn off purchasing for their kids.
