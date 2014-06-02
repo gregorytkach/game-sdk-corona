@@ -68,6 +68,8 @@ function ManagerPurchasesBase.onPurchasesLoaded(self, event)
     
     local products = event.products
     
+    print('loaded '..tostring(#products)..'purchases')
+    
     for _, purchase in ipairs(products) do
         print(purchase.title)              -- This is a string.
         print(purchase.description)        -- This is a string.
@@ -81,6 +83,8 @@ function ManagerPurchasesBase.onPurchasesLoaded(self, event)
             purchaseItem:setPriceHard(tonumber(purchase.localizedPrice))
         end
     end
+    
+    print('invalid purhcases count: '..tostring(#event.invalidProducts), ELogLevel.ELL_WARNING)
     
     if(#event.invalidProducts > 0)then
         for _, purchase in ipairs(#event.invalidProducts) do
@@ -104,10 +108,10 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     local transaction   = event.transaction
     local tstate        = event.transaction.state
     
-    print('state'..tostring(tstate))
-    print("receipt"..tostring(transaction.receipt))
-    print("transactionIdentifier"..tostring(transaction.identifier))
-    print("date"..tostring(transaction.date))
+    print('state '..tostring(tstate))
+    print("receipt "..tostring(transaction.receipt))
+    print("transactionIdentifier "..tostring(transaction.identifier))
+    print("date "..tostring(transaction.date))
     
     local callbacks     = self._callbacks[transaction.productIdentifier]
     
@@ -330,8 +334,6 @@ function ManagerPurchasesBase.tryLoadPurchases(self, purchasesIDs)
         self._store.loadProducts(purchasesIDs, 
         function(event)
             self._productsLoadingInProgress  = false
-            
-            print('purchases loaded')
             
             self:onPurchasesLoaded(event)
         end)
