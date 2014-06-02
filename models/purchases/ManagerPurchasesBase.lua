@@ -78,10 +78,11 @@ function ManagerPurchasesBase.onPurchasesLoaded(self, event)
         print(purchase.localizedPrice)     -- This is a string.
         print(purchase.productIdentifier)  -- This is a string.
         
+        print('Found purchase info: '..tostring(purchase.productIdentifier))
+        
         for _, purchaseItem in ipairs(self._purchases)do
             purchaseItem:setPriceHard(tonumber(purchase.localizedPrice))
         end
-        
     end
     
     if(#event.invalidProducts > 0)then
@@ -105,6 +106,7 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     local transaction   = event.transaction
     local tstate        = event.transaction.state
     
+    print('state'..tostring(tstate))
     print("receipt"..tostring(transaction.receipt))
     print("transactionIdentifier"..tostring(transaction.identifier))
     print("date"..tostring(transaction.date))
@@ -172,8 +174,6 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
             onError()
         end
     end
-    
-    print("done with store business for now")
 end
 
 --
