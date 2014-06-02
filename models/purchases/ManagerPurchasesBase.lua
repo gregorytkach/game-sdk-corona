@@ -252,7 +252,10 @@ function ManagerPurchasesBase.deserialize(self, data)
         purchaseItem:deserialize(purchaseData)
         
         table.insert(self._purchases, purchaseItem)
-        table.insert(purchasesIDs, purchaseItem:name())
+        
+        if(purchaseItem:canPaymentInHard())then
+            table.insert(purchasesIDs, purchaseItem:name())
+        end
     end
     
     if(#self._purchases > 0)then

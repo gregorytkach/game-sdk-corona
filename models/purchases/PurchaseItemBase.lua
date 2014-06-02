@@ -49,6 +49,10 @@ function PurchaseItemBase.canPaymentInSoft(self)
     return result
 end
 
+function PurchaseItemBase.canPaymentInHard(self)
+    return self._priceHard > 0
+end
+
 --
 -- Methods
 --
