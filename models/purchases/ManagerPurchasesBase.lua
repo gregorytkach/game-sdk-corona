@@ -183,6 +183,10 @@ function ManagerPurchasesBase.init(self)
     
     self._store = require( "store" )
     
+    if self._store.target == "google" then
+        self._store = require("plugin.google.iap.v3")
+    end
+    
     self:updateHardPaymentsState()
     
     Runtime:addEventListener(ERuntimeEvent.ERE_SYSTEM, 
@@ -265,14 +269,14 @@ end
 function ManagerPurchasesBase.initStores(self, purchasesIDs)
     
     local storeInitialized = false
-        
-        if(self._store.availableStores.apple)then
-            self:initStoreApple()
-            storeInitialized = true
-        elseif(self._store.availableStores.google)then
-            self:initStoreGoogle()
-            storeInitialized = true
-        end
+    
+    if(self._store.availableStores.apple)then
+        self:initStoreApple()
+        storeInitialized = true
+    elseif(self._store.availableStores.google)then
+        self:initStoreGoogle()
+        storeInitialized = true
+    end
     
     timer.performWithDelay( 1000,
     function()
