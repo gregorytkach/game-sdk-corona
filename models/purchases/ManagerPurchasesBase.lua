@@ -69,9 +69,7 @@ function ManagerPurchasesBase.onPurchasesLoaded(self, event)
     
     local products = event.products
     
-    print(products)
-    
-    for _, purchase in ipairs(event.products) do
+    for _, purchase in ipairs(products) do
         print(purchase.title)              -- This is a string.
         print(purchase.description)        -- This is a string.
         print(purchase.price)              -- This is a number.
