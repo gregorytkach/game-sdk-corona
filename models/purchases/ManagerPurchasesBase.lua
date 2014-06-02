@@ -264,9 +264,7 @@ end
 
 function ManagerPurchasesBase.initStores(self, purchasesIDs)
     
-    timer.performWithDelay( 1000,
-    function()
-        local storeInitialized = false
+    local storeInitialized = false
         
         if(self._store.availableStores.apple)then
             self:initStoreApple()
@@ -275,14 +273,14 @@ function ManagerPurchasesBase.initStores(self, purchasesIDs)
             self:initStoreGoogle()
             storeInitialized = true
         end
-        
+    
+    timer.performWithDelay( 1000,
+    function()
         if(storeInitialized)then
             self:updateHardPaymentsState()
-            self:loadPurchases(purchasesIDs)
+            self:tryLoadPurchases(purchasesIDs)
         end
     end)
-    
-    
 end
 
 function ManagerPurchasesBase.initStoreApple(self)
@@ -299,14 +297,14 @@ end
 function ManagerPurchasesBase.initStoreGoogle(self)
     print('init google store')
     
-    self._store.init( "google", 
+    self._store.init("google", 
     function(event)         
-        self:onTransactionEvent(event)                
+        self:onTransactionEvent(event) 
     end)
     
 end
 
-function ManagerPurchasesBase.loadPurchases(self, purchasesIDs)
+function ManagerPurchasesBase.tryLoadPurchases(self, purchasesIDs)
     
     if(self._productsLoaded or self._productsLoadingInProgress)then
         return
