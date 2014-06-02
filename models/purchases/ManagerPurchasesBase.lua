@@ -287,6 +287,7 @@ function ManagerPurchasesBase.deserialize(self, data)
     end
     
     if(self._canPayByHard)then
+        print('try load purchases. Purchases count: '..table.getn(purchasesIDs))
         self._store.loadProducts(purchasesIDs, 
         function(event)
             self:onPurchasesLoaded(event)
