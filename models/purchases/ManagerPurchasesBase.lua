@@ -194,34 +194,7 @@ function ManagerPurchasesBase.init(self)
     end)
     
     
-    if self._store.availableStores.apple  then
-        timer.performWithDelay(1000, 
-        function() 
-            print('init apple store')
-            
-            self._store.init( "apple", 
-            
-            function(event)
-                self:onTransactionEvent(event)
-            end) 
-            
-            self:updateHardPaymentsState()
-        end)
-        
-    elseif self._store.availableStores.google then
-        
-        timer.performWithDelay( 1000,
-        function()
-            print('init google store')
-            
-            self._store.init( "google", 
-            function(event)         
-                self:onTransactionEvent(event)                
-            end)
-            
-            self:updateHardPaymentsState()
-        end)
-    end
+    
     
     self._callbacks = {}
     
@@ -286,6 +259,54 @@ function ManagerPurchasesBase.deserialize(self, data)
         UtilsArray.sortQuick(self._purchases, "_contentCount")
     end
     
+    self:initStores(purchasesIDs)
+end
+
+function ManagerPurchasesBase.initStores(self, purchasesIDs)
+    
+    timer.performWithDelay( 1000,
+    function()
+        local storeInitialized = false
+        
+        if(self._store.availableStores.apple)then
+            self:initStoreApple()
+            storeInitialized = true
+        elseif(self._store.availableStores.google)then
+            self:initStoreGoogle()
+            storeInitialized = true
+        end
+        
+        if(storeInitialized)then
+            self:updateHardPaymentsState()
+            self:loadPurhcases(purchasesIDs)
+        end
+    end)
+    
+    
+end
+
+function ManagerPurchasesBase.initStoreApple(self)
+    print('init apple store')
+    
+    self._store.init( "apple", 
+    
+    function(event)
+        self:onTransactionEvent(event)
+    end) 
+    
+end
+
+function ManagerPurchasesBase.initStoreGoogle(self)
+    print('init google store')
+    
+    self._store.init( "google", 
+    function(event)         
+        self:onTransactionEvent(event)                
+    end)
+    
+end
+
+function ManagerPurchasesBase.loadPurhcases(self, purchasesIDs)
     if(self._canPayByHard)then
         print('try load purchases. Purchases count: '..table.getn(purchasesIDs))
         self._store.loadProducts(purchasesIDs, 
@@ -293,5 +314,6 @@ function ManagerPurchasesBase.deserialize(self, data)
             self:onPurchasesLoaded(event)
         end)
     end
-    
 end
+
+
