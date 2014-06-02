@@ -1,6 +1,7 @@
 require('sdk.models.purchases.PurchaseItemBase')
 require('sdk.models.purchases.EPurchaseTypeBase')
 require('sdk.models.purchases.EPurchaseState')
+require('sdk.models.purchases.ETargetStoreType')
 
 ManagerPurchasesBase = classWithSuper(SerializableObject, 'ManagerPurchasesBase')
 
@@ -122,7 +123,7 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     --The assumption here is that any real purchase should happen reasonably
     --quick while restores will have a transaction date sometime in the past.
     --5 minutes seems sufficient to separate a purchase from a restore.
-    if self._store.availableStores.google and tstate == EPurchaseState.EPS_PURCHASED then
+    if self._targetStore == ETargetStoreType.ETS_GOOGLE and tstate == EPurchaseState.EPS_PURCHASED then
         local timeStamp = UtilsTime.makeTimeStamp(transaction.date, "ctime")
         if timeStamp + 360 < os.time() then  -- if the time stamp is older than 5 minutes, we will assume a restore.
             print("map this purchase to a restore")
@@ -183,7 +184,11 @@ function ManagerPurchasesBase.init(self)
     
     self._store = require( "store" )
     
-    if self._store.target == "google" then
+    self._targetStore = self._store.target
+    
+    print('Target store is: '..tostring(self._targetStore))
+    
+    if self._targetStore == ETargetStoreType.ETS_GOOGLE then
         self._store = require("plugin.google.iap.v3")
     end
     
@@ -270,10 +275,10 @@ function ManagerPurchasesBase.initStores(self, purchasesIDs)
     
     local storeInitialized = false
     
-    if(self._store.availableStores.apple)then
+    if(self._targetStore == ETargetStoreType.ETS_APPLE)then
         self:initStoreApple()
         storeInitialized = true
-    elseif(self._store.availableStores.google)then
+    elseif(self._targetStore == ETargetStoreType.ETS_GOOGLE)then
         self:initStoreGoogle()
         storeInitialized = true
     end
