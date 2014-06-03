@@ -241,7 +241,7 @@ function ManagerPurchasesBase.init(self)
 end
 
 function ManagerPurchasesBase.tryCheckLicense(self)
-    if((self._targetStore ~= EStoreType.EST_GOOGLE) or (application.debug))then
+    if((self._targetStore ~= EStoreType.EST_GOOGLE) or (not application.check_license))then
         return 
     end
     
