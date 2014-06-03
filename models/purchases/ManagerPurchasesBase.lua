@@ -180,19 +180,19 @@ end
 
 function ManagerPurchasesBase.onLicenseChecked(event)
     --Prints the name of this event, "licensing".
-    print(event.name, ELogLevel.ELL_PURCHASES)
+    print('event.name: '..tostring(event.name), ELogLevel.ELL_PURCHASES)
     --Prints the name of the provider for this licensing instance, "google"
-    print(event.provider, ELogLevel.ELL_PURCHASES)
+    print('event.provider: '..tostring(event.provider), ELogLevel.ELL_PURCHASES)
     --Prints true if it has been verified else it prints false.
-    print(event.isVerified, ELogLevel.ELL_PURCHASES)
+    print('event.isVerified: '..tostring(event.isVerified), ELogLevel.ELL_PURCHASES)
     --Prints true if there was an error during verification else it will return nil.  Errors can be anything from configuration errors to network errors.
-    print(event.isError, ELogLevel.ELL_PURCHASES)
+    print('event.isError: '..tostring(event.isError), ELogLevel.ELL_PURCHASES)
     --Prints the type of error, "configuration" or "network".  If there was no error then this will return nil.
-    print(event.errorType, ELogLevel.ELL_PURCHASES)
+    print('event.errorType: '..tostring(event.errorType), ELogLevel.ELL_PURCHASES)
     --Prints a translated response from the licensing server.
-    print(event.response, ELogLevel.ELL_PURCHASES)
+    print('event.response: '..tostring(event.response), ELogLevel.ELL_PURCHASES)
     --Prints the expiration time of the expiration time of the cached license.
-    print(event.expiration, ELogLevel.ELL_PURCHASES)
+    print('event.expiration: '..tostring(event.expiration), ELogLevel.ELL_PURCHASES)
     
     if not event.isVerified then
         --failed verify app from the play store, we print a message
@@ -225,6 +225,7 @@ function ManagerPurchasesBase.init(self)
     print('Target store is: '..tostring(self._targetStore), ELogLevel.ELL_PURCHASES)
     
     if (self._store.availableStores ~= nil)then
+        print('available stores is:')
         for key, value in pairs(self._store.availableStores)do
             print('available store is:'..tostring(key)..' '..tostring(value), ELogLevel.ELL_PURCHASES)
         end
