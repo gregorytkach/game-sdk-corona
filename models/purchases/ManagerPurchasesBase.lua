@@ -1,7 +1,7 @@
 require('sdk.models.purchases.PurchaseItemBase')
 require('sdk.models.purchases.EPurchaseTypeBase')
 require('sdk.models.purchases.EPurchaseState')
-require('sdk.models.purchases.ETargetStoreType')
+require('sdk.models.purchases.EStoreType')
 
 ManagerPurchasesBase = classWithSuper(SerializableObject, 'ManagerPurchasesBase')
 
@@ -84,7 +84,7 @@ function ManagerPurchasesBase.onPurchasesLoaded(self, event)
         end
     end
     
-    print('invalid purhcases count: '..tostring(#event.invalidProducts), ELogLevel.ELL_WARNING)
+    print('invalid purchases count: '..tostring(#event.invalidProducts), ELogLevel.ELL_WARNING)
     
     if(#event.invalidProducts > 0)then
         for _, purchase in ipairs(event.invalidProducts) do
@@ -128,7 +128,7 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     --The assumption here is that any real purchase should happen reasonably
     --quick while restores will have a transaction date sometime in the past.
     --5 minutes seems sufficient to separate a purchase from a restore.
-    if self._targetStore == ETargetStoreType.ETS_GOOGLE and tstate == EPurchaseState.EPS_PURCHASED then
+    if self._targetStore == EStoreType.EST_GOOGLE and tstate == EPurchaseState.EPS_PURCHASED then
         local timeStamp = UtilsTime.makeTimeStamp(transaction.date, "ctime")
         if timeStamp + 360 < os.time() then  -- if the time stamp is older than 5 minutes, we will assume a restore.
             print("map this purchase to a restore")
@@ -179,6 +179,29 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     end
 end
 
+function ManagerPurchasesBase.onLicenseChecked(event)
+    --Prints the name of this event, "licensing".
+    print(event.name)
+    --Prints the name of the provider for this licensing instance, "google"
+    print(event.provider)
+    --Prints true if it has been verified else it prints false.
+    print(event.isVerified)
+    --Prints true if there was an error during verification else it will return nil.  Errors can be anything from configuration errors to network errors.
+    print(event.isError)
+    --Prints the type of error, "configuration" or "network".  If there was no error then this will return nil.
+    print(event.errorType)
+    --Prints a translated response from the licensing server.
+    print(event.response)
+    --Prints the expiration time of the expiration time of the cached license.
+    print(event.expiration)
+    
+    if not event.isVerified then
+        --failed verify app from the play store, we print a message
+        print( "Application not licensed. Now quit.", ELogLevel.ELL_ERROR)
+        native.requestExit()  --assuming this is how we handle pirates
+    end
+end
+
 --
 -- Methods
 --
@@ -195,7 +218,7 @@ function ManagerPurchasesBase.init(self)
     
     print('Target store is: '..tostring(self._targetStore))
     
-    if self._targetStore == ETargetStoreType.ETS_GOOGLE then
+    if self._targetStore == EStoreType.EST_GOOGLE then
         self._store = require("plugin.google.iap.v3")
     end
     
@@ -206,6 +229,8 @@ function ManagerPurchasesBase.init(self)
         self:onRuntimeEvent(event) 
     end)
     
+    self:tryCheckLicense()
+    
     --    self._store.availableStores     — used to see if a store is valid for your device.
     --    self._store.canLoadProducts     — check to see if loading products is allowed, which it’s not for Google Play.
     --    self._store.canMakePurchases    — parents can turn off purchasing for their kids.
@@ -215,8 +240,24 @@ function ManagerPurchasesBase.init(self)
     --    self._store.target              — returns the value of the store selected in the build screen.
 end
 
+function ManagerPurchasesBase.tryCheckLicense(self)
+    if((self._targetStore ~= EStoreType.EST_GOOGLE) or (application.debug))then
+        return 
+    end
+    
+    local licensing = require("licensing")
+    licensing.init("google")
+    
+    licensing.verify(
+    function(event)
+        self:onLicenseChecked(event)
+    end)
+    
+end
+
 function ManagerPurchasesBase.updateHardPaymentsState(self)
     self._canPayByHard = self._store.canMakePurchases and self._store.isActive
+    print('can pay by hard: '..tostring(self._canPayByHard))
 end
 
 function ManagerPurchasesBase.getPurchases(self, type)
@@ -276,10 +317,10 @@ function ManagerPurchasesBase.initStores(self, purchasesIDs)
     
     local storeInitialized = false
     
-    if(self._targetStore == ETargetStoreType.ETS_APPLE)then
+    if(self._targetStore == EStoreType.EST_APPLE)then
         self:initStoreApple()
         storeInitialized = true
-    elseif(self._targetStore == ETargetStoreType.ETS_GOOGLE)then
+    elseif(self._targetStore == EStoreType.EST_GOOGLE)then
         self:initStoreGoogle()
         storeInitialized = true
     end
@@ -316,7 +357,7 @@ end
 
 function ManagerPurchasesBase.tryLoadPurchases(self, purchasesIDs)
     
-    if(self._productsLoaded or self._productsLoadingInProgress)then
+    if(self._productsLoaded or self._productsLoadingInProgress or not self._canPayByHard)then
         return
     end
     
@@ -324,16 +365,21 @@ function ManagerPurchasesBase.tryLoadPurchases(self, purchasesIDs)
     
     print('try load purchases. Purchases count: '..table.getn(purchasesIDs))
     
-    print('can pay by hard: '..tostring(self._canPayByHard))
+    -- Property "canLoadProducts" indicates that localized product information such as name and price
+    -- can be retrieved from the store (such as iTunes). Fetch all product info here asynchronously.
     print('can load products: '..tostring(self._store.canLoadProducts))
     
-    if(self._canPayByHard and self._store.canLoadProducts)then
+    if(self._store.canLoadProducts)then
         self._store.loadProducts(purchasesIDs, 
         function(event)
             self._productsLoadingInProgress  = false
             
             self:onPurchasesLoaded(event)
         end)
+    else
+        self._productsLoadingInProgress  = false
+        
+        self._productsLoaded = true
     end
 end
 
