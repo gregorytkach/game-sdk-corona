@@ -26,7 +26,7 @@ function ManagerPurchasesBase.onTryPurchase(self, purchaseItem, onComplete, onEr
     
     local playerCurrent = GameInfo:instance():managerPlayers():playerCurrent()
     
-    print('can pay by hard: '..tostring(self._canPayByHard))
+    print('can pay by hard: '..tostring(self._canPayByHard), ELogLevel.ELL_PURCHASES)
     
     if(playerCurrent:currencySoft() >= purchaseItem:priceSoft() and purchaseItem:priceSoft() > 0)then
         print(1)
@@ -48,7 +48,7 @@ function ManagerPurchasesBase.onTryPurchase(self, purchaseItem, onComplete, onEr
             on_error    = onError
         }
         
-        print(purchaseItem:name())
+        print(purchaseItem:name(), ELogLevel.ELL_PURCHASES)
         
         self._store.purchase({purchaseItem:name()})
         
@@ -71,11 +71,11 @@ function ManagerPurchasesBase.onPurchasesLoaded(self, event)
     print('loaded '..tostring(#products)..'purchases')
     
     for _, purchase in ipairs(products) do
-        print(purchase.title)              -- This is a string.
-        print(purchase.description)        -- This is a string.
-        print(purchase.price)              -- This is a number.
-        print(purchase.localizedPrice)     -- This is a string.
-        print(purchase.productIdentifier)  -- This is a string.
+        print(purchase.title,               ELogLevel.ELL_PURCHASES)              -- This is a string.
+        print(purchase.description,         ELogLevel.ELL_PURCHASES)        -- This is a string.
+        print(purchase.price,               ELogLevel.ELL_PURCHASES)              -- This is a number.
+        print(purchase.localizedPrice,      ELogLevel.ELL_PURCHASES)     -- This is a string.
+        print(purchase.productIdentifier,   ELogLevel.ELL_PURCHASES)  -- This is a string.
         
         print('Found purchase info: '..tostring(purchase.productIdentifier))
         
@@ -109,10 +109,10 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     local transaction   = event.transaction
     local tstate        = event.transaction.state
     
-    print('state '..tostring(tstate))
-    print("receipt "..tostring(transaction.receipt))
-    print("transactionIdentifier "..tostring(transaction.identifier))
-    print("date "..tostring(transaction.date))
+    print('state '..tostring(tstate), ELogLevel.ELL_PURCHASES)
+    print("receipt "..tostring(transaction.receipt), ELogLevel.ELL_PURCHASES)
+    print("transactionIdentifier "..tostring(transaction.identifier), ELogLevel.ELL_PURCHASES)
+    print("date "..tostring(transaction.date), ELogLevel.ELL_PURCHASES)
     
     local callbacks     = self._callbacks[transaction.productIdentifier]
     
@@ -131,35 +131,34 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
     if self._targetStore == EStoreType.EST_GOOGLE and tstate == EPurchaseState.EPS_PURCHASED then
         local timeStamp = UtilsTime.makeTimeStamp(transaction.date, "ctime")
         if timeStamp + 360 < os.time() then  -- if the time stamp is older than 5 minutes, we will assume a restore.
-            print("map this purchase to a restore")
+            print("map this purchase to a restore", ELogLevel.ELL_PURCHASES)
             
             tstate = EPurchaseState.EPS_RESTORED
-            print("I think tstate is "..tostring(tstate))
+            print("I think tstate is "..tostring(tstate), ELogLevel.ELL_PURCHASES)
             --            restoring = false
         end
     end
     
     if tstate == EPurchaseState.EPS_PURCHASED then
-        print("Transaction succuessful!")
+        print("Transaction succuessful!", ELogLevel.ELL_PURCHASES)
         native.showAlert("Thank you!", "Your support is greatly appreciated!", 
         {
             "Okay"
         })
-        
     elseif  tstate == EPurchaseState.EPS_RESTORED then
-        print("Transaction restored (from previous session)")
+        print("Transaction restored (from previous session)", ELogLevel.ELL_PURCHASES)
         
     elseif tstate == EPurchaseState.EPS_REFUNDED then
-        print("User requested a refund -- locking app back")
+        print("User requested a refund -- locking app back", ELogLevel.ELL_PURCHASES)
         
     elseif tstate == EPurchaseState.EPS_REVOKED then --Amazon feature
-        print ("The user who has a revoked purchase is "..tostring(transaction.userId))
+        print ("The user who has a revoked purchase is "..tostring(transaction.userId), ELogLevel.ELL_PURCHASES)
         --Revoke this SKU here:
         
     elseif tstate == EPurchaseState.EPS_CANCELLED then
-        print("User cancelled transaction")
+        print("User cancelled transaction", ELogLevel.ELL_PURCHASES)
     elseif tstate == EPurchaseState.EPS_FAILED then
-        print("Transaction failed, type: ".. tostring(transaction.errorType)..' '..tostring(transaction.errorString))
+        print("Transaction failed, type: ".. tostring(transaction.errorType)..' '..tostring(transaction.errorString), ELogLevel.ELL_PURCHASES)
     else
         assert(false, "unknown purchase event: "..tostring(tstate))
     end
@@ -181,19 +180,19 @@ end
 
 function ManagerPurchasesBase.onLicenseChecked(event)
     --Prints the name of this event, "licensing".
-    print(event.name)
+    print(event.name, ELogLevel.ELL_PURCHASES)
     --Prints the name of the provider for this licensing instance, "google"
-    print(event.provider)
+    print(event.provider, ELogLevel.ELL_PURCHASES)
     --Prints true if it has been verified else it prints false.
-    print(event.isVerified)
+    print(event.isVerified, ELogLevel.ELL_PURCHASES)
     --Prints true if there was an error during verification else it will return nil.  Errors can be anything from configuration errors to network errors.
-    print(event.isError)
+    print(event.isError, ELogLevel.ELL_PURCHASES)
     --Prints the type of error, "configuration" or "network".  If there was no error then this will return nil.
-    print(event.errorType)
+    print(event.errorType, ELogLevel.ELL_PURCHASES)
     --Prints a translated response from the licensing server.
-    print(event.response)
+    print(event.response, ELogLevel.ELL_PURCHASES)
     --Prints the expiration time of the expiration time of the cached license.
-    print(event.expiration)
+    print(event.expiration, ELogLevel.ELL_PURCHASES)
     
     if not event.isVerified then
         --failed verify app from the play store, we print a message
@@ -206,6 +205,13 @@ end
 -- Methods
 --
 
+--    self._store.availableStores     — used to see if a store is valid for your device.
+--    self._store.canLoadProducts     — check to see if loading products is allowed, which it’s not for Google Play.
+--    self._store.canMakePurchases    — parents can turn off purchasing for their kids.
+--    self._store.finishTransaction() — very important call, used in your event listener function.
+--    self._store.isActive            — a way to confirm the store was initialized properly.
+--    self._store.loadProducts()      — a function to return information about products, including localized descriptions, names, and prices. This is not supported on Google.
+--    self._store.target              — returns the value of the store selected in the build screen.
 function ManagerPurchasesBase.init(self)
     
     SerializableObject.init(self)
@@ -214,9 +220,21 @@ function ManagerPurchasesBase.init(self)
     self._callbacks         = {}
     
     self._store             = require( "store" )
-    self._targetStore       = self._store.target
     
-    print('Target store is: '..tostring(self._targetStore))
+    self._targetStore       = self._store.target
+    print('Target store is: '..tostring(self._targetStore), ELogLevel.ELL_PURCHASES)
+    
+    if (self._store.availableStores ~= nil)then
+        for key, value in pairs(self._store.availableStores)do
+            print('available store is:'..tostring(key)..' '..tostring(value), ELogLevel.ELL_PURCHASES)
+        end
+    end
+    
+    -- Property "canLoadProducts" indicates that localized product information such as name and price
+    -- can be retrieved from the store (such as iTunes). Fetch all product info here asynchronously.
+    print('can load products: '..tostring(self._store.canLoadProducts), ELogLevel.ELL_PURCHASES)
+    print('can make purchases: '..tostring(self._store.canMakePurchases), ELogLevel.ELL_PURCHASES)
+    print('is active: '..tostring(self._store.isActive), ELogLevel.ELL_PURCHASES)
     
     if self._targetStore == EStoreType.EST_GOOGLE then
         self._store = require("plugin.google.iap.v3")
@@ -230,14 +248,6 @@ function ManagerPurchasesBase.init(self)
     end)
     
     self:tryCheckLicense()
-    
-    --    self._store.availableStores     — used to see if a store is valid for your device.
-    --    self._store.canLoadProducts     — check to see if loading products is allowed, which it’s not for Google Play.
-    --    self._store.canMakePurchases    — parents can turn off purchasing for their kids.
-    --    self._store.finishTransaction() — very important call, used in your event listener function.
-    --    self._store.isActive            — a way to confirm the store was initialized properly.
-    --    self._store.loadProducts()      — a function to return information about products, including localized descriptions, names, and prices. This is not supported on Google.
-    --    self._store.target              — returns the value of the store selected in the build screen.
 end
 
 function ManagerPurchasesBase.tryCheckLicense(self)
@@ -257,7 +267,7 @@ end
 
 function ManagerPurchasesBase.updateHardPaymentsState(self)
     self._canPayByHard = self._store.canMakePurchases and self._store.isActive
-    print('can pay by hard: '..tostring(self._canPayByHard))
+    print('can pay by hard: '..tostring(self._canPayByHard), ELogLevel.ELL_PURCHASES)
 end
 
 function ManagerPurchasesBase.getPurchases(self, type)
@@ -335,7 +345,7 @@ function ManagerPurchasesBase.initStores(self, purchasesIDs)
 end
 
 function ManagerPurchasesBase.initStoreApple(self)
-    print('init apple store')
+    print('init apple store', ELogLevel.ELL_PURCHASES)
     
     self._store.init( "apple", 
     
@@ -346,7 +356,7 @@ function ManagerPurchasesBase.initStoreApple(self)
 end
 
 function ManagerPurchasesBase.initStoreGoogle(self)
-    print('init google store')
+    print('init google store', ELogLevel.ELL_PURCHASES)
     
     self._store.init("google", 
     function(event)         
@@ -363,11 +373,7 @@ function ManagerPurchasesBase.tryLoadPurchases(self, purchasesIDs)
     
     self._productsLoadingInProgress = true
     
-    print('try load purchases. Purchases count: '..table.getn(purchasesIDs))
-    
-    -- Property "canLoadProducts" indicates that localized product information such as name and price
-    -- can be retrieved from the store (such as iTunes). Fetch all product info here asynchronously.
-    print('can load products: '..tostring(self._store.canLoadProducts))
+    print('try load purchases. Purchases count: '..table.getn(purchasesIDs), ELogLevel.ELL_PURCHASES)
     
     if(self._store.canLoadProducts)then
         self._store.loadProducts(purchasesIDs, 

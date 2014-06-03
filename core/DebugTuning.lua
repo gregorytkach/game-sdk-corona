@@ -49,6 +49,10 @@ local function debugPrint(message, level)
         
         originalPrint("[ERROR]: "..getString(message))
         
+    elseif(level == ELogLevel.ELL_PURCHASES)then
+        
+        originalPrint("[PURCHASES]: "..getString(message))
+        
     else            
         originalPrint(message)
     end
