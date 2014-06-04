@@ -337,12 +337,11 @@ function ManagerPurchasesBase.initStores(self, purchasesIDs)
     
     local storeInitialized = false
     
-    if(self._targetStore == EStoreType.EST_APPLE)then
-        self:initStoreApple()
-        storeInitialized = true
-    elseif(self._targetStore == EStoreType.EST_GOOGLE)then
-        self:initStoreGoogle()
-        storeInitialized = true
+    if(self._targetStore == EStoreType.EST_APPLE or self._targetStore == EStoreType.EST_GOOGLE)then
+        self._store.init( 
+        function(event)
+            self:onTransactionEvent(event)
+        end) 
     end
     
     timer.performWithDelay( 1000,
@@ -353,26 +352,6 @@ function ManagerPurchasesBase.initStores(self, purchasesIDs)
             timer.performWithDelay( 1000, function() self:tryLoadPurchases(purchasesIDs) end)
         end
     end)
-end
-
-function ManagerPurchasesBase.initStoreApple(self)
-    print('init apple store', ELogLevel.ELL_PURCHASES)
-    
-    self._store.init( 
-    function(event)
-        self:onTransactionEvent(event)
-    end) 
-    
-end
-
-function ManagerPurchasesBase.initStoreGoogle(self)
-    print('init google store', ELogLevel.ELL_PURCHASES)
-    
-    self._store.init(
-    function(event)         
-        self:onTransactionEvent(event) 
-    end)
-    
 end
 
 function ManagerPurchasesBase.tryLoadPurchases(self, purchasesIDs)
