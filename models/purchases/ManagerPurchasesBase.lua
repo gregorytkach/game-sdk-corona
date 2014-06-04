@@ -65,17 +65,23 @@ end
 
 
 function ManagerPurchasesBase.onPurchasesLoaded(self, event)
+    if event.isError then
+        print(event.errorType)
+        print(event.errorString)
+        
+        return
+    end
     
     local products = event.products
     
     print('loaded '..tostring(#products)..'purchases')
     
     for _, purchase in ipairs(products) do
-        print(purchase.title,               ELogLevel.ELL_PURCHASES)              -- This is a string.
-        print(purchase.description,         ELogLevel.ELL_PURCHASES)        -- This is a string.
-        print(purchase.price,               ELogLevel.ELL_PURCHASES)              -- This is a number.
-        print(purchase.localizedPrice,      ELogLevel.ELL_PURCHASES)     -- This is a string.
-        print(purchase.productIdentifier,   ELogLevel.ELL_PURCHASES)  -- This is a string.
+        print(purchase.title,               ELogLevel.ELL_PURCHASES)                -- This is a string.
+        print(purchase.description,         ELogLevel.ELL_PURCHASES)                -- This is a string.
+        print(purchase.price,               ELogLevel.ELL_PURCHASES)                -- This is a number.
+        print(purchase.localizedPrice,      ELogLevel.ELL_PURCHASES)                -- This is a string.
+        print(purchase.productIdentifier,   ELogLevel.ELL_PURCHASES)                -- This is a string.
         
         print('Found purchase info: '..tostring(purchase.productIdentifier))
         
@@ -89,7 +95,6 @@ function ManagerPurchasesBase.onPurchasesLoaded(self, event)
     if(#event.invalidProducts > 0)then
         for _, purchase in ipairs(event.invalidProducts) do
             print('Invalid purchase: '..tostring(purchase.productIdentifier), ELogLevel.ELL_WARNING)
-            print(purchase)
         end  
     end
     
@@ -139,7 +144,7 @@ function ManagerPurchasesBase.onTransactionEvent(self, event)
         end
     end
     
-    if tstate == EPurchaseState.EPS_PURCHASED then
+    if tstate == EPurchaseState.EPS_PURCHASED or tstate == EPurchaseState.EPS_CONSUMED then
         print("Transaction succuessful!", ELogLevel.ELL_PURCHASES)
         native.showAlert("Thank you!", "Your support is greatly appreciated!", 
         {
@@ -237,8 +242,11 @@ function ManagerPurchasesBase.init(self)
     print('can make purchases: '..tostring(self._store.canMakePurchases), ELogLevel.ELL_PURCHASES)
     print('is active: '..tostring(self._store.isActive), ELogLevel.ELL_PURCHASES)
     
+    
+    
     if self._targetStore == EStoreType.EST_GOOGLE then
         self._store = require("plugin.google.iap.v3")
+        self._store['purchase'] = self._store['consumePurchase']
     end
     
     self:updateHardPaymentsState()
@@ -340,7 +348,8 @@ function ManagerPurchasesBase.initStores(self, purchasesIDs)
     function()
         if(storeInitialized)then
             self:updateHardPaymentsState()
-            self:tryLoadPurchases(purchasesIDs)
+            
+            timer.performWithDelay( 1000, function() self:tryLoadPurchases(purchasesIDs) end)
         end
     end)
 end
