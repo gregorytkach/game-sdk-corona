@@ -358,8 +358,7 @@ end
 function ManagerPurchasesBase.initStoreApple(self)
     print('init apple store', ELogLevel.ELL_PURCHASES)
     
-    self._store.init( "apple", 
-    
+    self._store.init( 
     function(event)
         self:onTransactionEvent(event)
     end) 
@@ -369,7 +368,7 @@ end
 function ManagerPurchasesBase.initStoreGoogle(self)
     print('init google store', ELogLevel.ELL_PURCHASES)
     
-    self._store.init("google", 
+    self._store.init(
     function(event)         
         self:onTransactionEvent(event) 
     end)
