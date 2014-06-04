@@ -92,9 +92,10 @@ function ManagerPurchasesBase.onPurchasesLoaded(self, event)
     
     print('invalid purchases count: '..tostring(#event.invalidProducts), ELogLevel.ELL_WARNING)
     
+    print('Invalid purchases:')
     if(#event.invalidProducts > 0)then
         for _, purchase in ipairs(event.invalidProducts) do
-            print('Invalid purchase: '..tostring(purchase.productIdentifier), ELogLevel.ELL_WARNING)
+            print(purchase), ELogLevel.ELL_WARNING)
         end  
     end
     
