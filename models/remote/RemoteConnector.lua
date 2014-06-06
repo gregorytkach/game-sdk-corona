@@ -57,20 +57,40 @@ function RemoteConnector.update(self, updateType, data, callback, methodType, co
     
     local responseString = {}
     
-    local r, c, h = http.request 
+    local headers = 
+    {
+        ["content-length"]  = #self:getParams(data, contentType),
+        ["Content-Type"]    = contentType --"application/x-www-form-urlencoded"
+    }
+    
+    local tmpFilename                   = os.tmpname()
+    local tmpFile, errorMessage         = io.open(tmpFilename, 'w')
+    
+    assert(tmpFile ~= nil, errorMessage)
+    
+    local request =
     {
         url         = url,
         method      = "POST",
-        headers     = 
-        {
-            ["content-length"]  = #self:getParams(data, contentType),
-            ["Content-Type"]    = contentType --"application/x-www-form-urlencoded"
-        },
-        source  = ltn12.source.string(self:getParams(data, contentType)),
-        sink    = ltn12.sink.table(responseString)
+        headers     = headers,
+        source      = ltn12.source.string(self:getParams(data, contentType)),
+        --        sink        = ltn12.sink.table(responseString)
+        sink        = ltn12.sink.file(tmpFile)
     }
     
-    local responseData = self._json.decode(responseString[1])
+    local r, c, h = http.request(request) 
+    
+    --reopen file
+    tmpFile, errorMessage = io.open(tmpFilename, 'r')
+    
+    assert(tmpFile ~= nil, errorMessage)
+    
+    local contents = tmpFile:read("*a")
+    
+    os.remove(tmpFilename)
+    
+    
+    local responseData = self._json.decode(contents)
     
     local response = Response:new()
     response:deserialize(responseData)
