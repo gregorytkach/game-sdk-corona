@@ -63,7 +63,7 @@ function RemoteConnector.update(self, updateType, data, callback, methodType, co
         ["Content-Type"]    = contentType --"application/x-www-form-urlencoded"
     }
     
-    local tmpFilename                   = os.tmpname()
+    local tmpFilename                   = system.pathForFile('tmp_request_file', system.DocumentsDirectory)
     local tmpFile, errorMessage         = io.open(tmpFilename, 'w')
     
     assert(tmpFile ~= nil, errorMessage)
@@ -74,7 +74,6 @@ function RemoteConnector.update(self, updateType, data, callback, methodType, co
         method      = "POST",
         headers     = headers,
         source      = ltn12.source.string(self:getParams(data, contentType)),
-        --        sink        = ltn12.sink.table(responseString)
         sink        = ltn12.sink.file(tmpFile)
     }
     
